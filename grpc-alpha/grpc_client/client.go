@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	pb "github.com/egallis31/grpc-alpha/laforge_proto"
+	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
 )
 
 const (
@@ -15,6 +15,7 @@ const (
 	defaultName = "Laforge Agent 1"
 )
 
+/* TEST MESSAGES */
 
 func ping(c pb.LaforgeClient, name string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -37,6 +38,11 @@ func hostTest(c pb.LaforgeClient, name string) {
 	log.Printf("Host Info: %s, ID: %v, IP: %s, OS: %s", r.GetName(), r.GetId(), r.GetIp(), r.GetOs())
 }
 
+
+/*  BASE LAFORGE */
+// Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
+
+
 func main() {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
@@ -46,13 +52,17 @@ func main() {
 	defer conn.Close()
 	c := pb.NewLaforgeClient(conn)
 
-	// assigns vars
+	// START VARS
 	name := defaultName
 	if len(os.Args) > 1 {
 		name = os.Args[1]
 	}
 
+
+	// END VARS
+
 	ping(c, name)
 	hostTest(c, name)
+	
 
 }

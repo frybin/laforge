@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	pb "github.com/egallis31/grpc-alpha/laforge_proto"
+	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
 )
 
 const (
@@ -17,6 +17,7 @@ type server struct {
 	pb.UnimplementedLaforgeServer
 }
 
+/* TEST MESSAGES */
 
 //Ping Info
 func (s *server) GetPing(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
