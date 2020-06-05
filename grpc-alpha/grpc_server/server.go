@@ -67,7 +67,7 @@ func (s *server) GetEnvironment(ctx context.Context, in *pb.EnvironmentRequest) 
 		name = in.GetName()
 	}
 
-	log.Printf("Client Send - Competition Name: %v | ID: %v", in.GetName(), in.GetId())
+	log.Printf("Client Send - Environment Name: %v | ID: %v", in.GetName(), in.GetId())
 	
 	//demo response
 	env := pb.EnvironmentReply{Id: id, CompetitionId: 123456, OwnerId: 1111, Name: name, State: "Not Running", Attrs: []string{"local", "internal only"}, Networks: []int32{1, 2, 3}, Teams: []int32{11, 22, 33}}
