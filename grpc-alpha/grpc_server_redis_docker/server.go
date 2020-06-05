@@ -4,10 +4,13 @@ import (
 	"context"
 	"log"
 	"net"
-	"fmt"
 
 	"google.golang.org/grpc"
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
+
+	"github.com/go-redis/redis"
+	"os"
+	"fmt"
 )
 
 const (
@@ -18,11 +21,40 @@ type server struct {
 	pb.UnimplementedLaforgeServer
 }
 
+/* TEST REDIS */
+
+func SetRedis(key string) {
+	//redis client setup
+	client := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"), // no password set
+		DB:       0,  // use default DB
+	})
+	
+	ctx := context.Background()
+
+    err := client.Set(ctx, key, "value", 0).Err()
+    if err != nil {
+        panic(err)
+    }
+
+    val, err := client.Get(ctx, key).Result()
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(key, val)
+
+}
+
 /* TEST MESSAGES */
 
 //Ping Info
 func (s *server) GetPing(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error) {
 	log.Printf("Received: %v | ID: %v", in.GetName(), in.GetId())
+
+	//redis test
+	SetRedis(in.GetName())
+
 	return &pb.PingReply{Name: "Hello " + in.GetName(), Id: in.GetId()}, nil
 }
 
@@ -75,7 +107,10 @@ func (s *server) GetEnvironment(ctx context.Context, in *pb.EnvironmentRequest) 
 }
 
 
+
 func main() {
+
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

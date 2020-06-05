@@ -61,6 +61,27 @@ func competition(c pb.LaforgeClient, name string) {
 	log.Printf("Competition Name: %v | ID: %v | Env: %v | Users: %v | Build Config: %v", r.GetName(), r.GetId(), r.GetEnvironments(), r.GetUsers(), r.GetBuildConfigs())
 }
 
+// Request Environment - by string name, string state, int32 id, int32 competition_id, int32 owner_id
+func environment(c pb.LaforgeClient, name string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	// ENV_NAME/ID are interchangeable due to "oneof" proto definition
+	env_id := &pb.EnvironmentRequest_Id{Id: 1234}
+	r, err := c.GetEnvironment(ctx, &pb.EnvironmentRequest{Env: env_id})
+
+	//env_name := &pb.EnvironmentRequest_Name{Name: name}
+	//r, err := c.GetEnvironment(ctx, &pb.EnvironmentRequest{Env: env_name})
+
+	if err != nil {
+			log.Fatalf("could not greet: %v", err)
+	}
+	//print server demo response
+	log.Printf("Environment Name: %v | ID: %v | Comp ID: %v | Owner ID: %v | State: %s | Atts: %v | Networks: %v | Teams: %v", r.GetName(), r.GetId(), r.GetCompetitionId(), r.GetOwnerId(), r.GetState(), r.GetAttrs(), r.GetNetworks(), r.GetTeams())
+}
+
+
+
 func main() {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
@@ -78,11 +99,13 @@ func main() {
 	
 	// competition
 	comp_name := "Demo Comp"
+	env_name := "Test Environment"
 
 	// END VARS
 
 	ping(c, name)
 	hostTest(c, name)
 	competition(c, comp_name)
+	environment(c, env_name)
 
 }
