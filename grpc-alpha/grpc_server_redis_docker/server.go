@@ -7,6 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/go-redis/redis"
 	"os"
@@ -15,6 +16,8 @@ import (
 
 const (
 	port = ":50051"
+	certFile = "server.crt"
+	keyFile = "server.key"
 )
 
 type server struct {
@@ -115,7 +118,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	//secure server
+	creds, _ := credentials.NewServerTLSFromFile(certFile, keyFile)
+	s := grpc.NewServer(grpc.Creds(creds))
+
+	//insecure server
+	//s := grpc.NewServer()
 
 	fmt.Println("Starting Laforge Server on port " + port)
 

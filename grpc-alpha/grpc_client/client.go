@@ -8,11 +8,13 @@ import (
 
 	"google.golang.org/grpc"
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
 	address     = "localhost:50051"
 	defaultName = "Laforge Agent 1"
+	certFile = "server.crt"
 )
 
 /* TEST MESSAGES */
@@ -84,7 +86,17 @@ func environment(c pb.LaforgeClient, name string) {
 
 func main() {
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	//secure connection
+	creds, cred_err := credentials.NewClientTLSFromFile(certFile, "")
+	if cred_err != nil {
+		log.Fatalf("Cred Error: %v")
+	}
+	
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
+
+	//insecure connection 
+	//conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
