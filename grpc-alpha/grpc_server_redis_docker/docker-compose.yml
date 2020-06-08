@@ -3,7 +3,7 @@ version: "3.3"
 services:
     grpc-server:
         container_name: grpc-server
-        image: grpc-server
+        image: grpc-server:redis
         build:
             context: .
         environment: 
@@ -19,7 +19,7 @@ services:
         expose: 
             - 6379
         volumes: 
-            - /tmp/redis-data:/bitnami/redis/data
+            - grpc_redis:/bitnami/redis/data
         environment: 
             - REDIS_PASSWORD=laforge
 
@@ -28,6 +28,9 @@ services:
         hostname: redis-commander
         image: rediscommander/redis-commander:latest
         environment:
-        - REDIS_HOSTS=local:redis-server:6379:0:laforge
+            - REDIS_HOSTS=local:redis-server:6379:0:laforge
         ports:
-        - "8081:8081"
+            - "8081:8081"
+
+volumes: 
+    grpc_redis:
