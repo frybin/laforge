@@ -23,11 +23,34 @@ const (
 	keyFile = "server.key"
 )
 
+
 type server struct {
 	pb.UnimplementedLaforgeServer
 }
 
 /* TEST POSTGRES */
+
+/*func CreatePGTable(){
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    os.Getenv("PG_HOST"), os.Getenv("PG_PORT"), os.Getenv("PG_USER"), os.Getenv("PG_PASSWORD"), os.Getenv("PG_DB"))
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+	  panic(err)
+	}
+	defer db.Close()
+  
+	//figure out how to auto create table on start
+	err = db.Exec(`CREATE TABLE LAFORGE;`)
+
+	if err != nil {
+	  panic(err)
+	}
+  
+	fmt.Println("Successfully created new table")
+
+}*/
 
 func PingPG(){
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
@@ -47,6 +70,8 @@ func PingPG(){
   
 	fmt.Println("Successfully connected!")
 
+	//create table after successful ping
+	//CreatePGTable()
 }
 
 /* TEST MESSAGES */
