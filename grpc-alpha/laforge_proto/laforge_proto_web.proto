@@ -1,15 +1,13 @@
 syntax = "proto3";
-package laforge_proto;
+package laforge_proto_web;
 
-option go_package = "github.com/frybin/laforge/grpc-alpha/laforge_proto/laforge_proto";
+option go_package = "github.com/frybin/laforge/grpc-alpha/laforge_proto/laforge_proto_web";
 option java_multiple_files = true;
-option java_package = "io.laforge.proto";
-option java_outer_classname = "laforge_Proto";
+option java_package = "io.laforge.proto.web";
+option java_outer_classname = "laforge_Proto_web";
 
 
 service laforge {
-    rpc GetPing (PingRequest) returns (PingReply) {}
-    rpc GetHostTest (HostTestRequest) returns (HostTestReply) {}
     rpc GetCompetition (CompetitionRequest) returns (CompetitionReply) {}
     rpc GetEnvironment (EnvironmentRequest) returns (EnvironmentReply) {}
     rpc GetBuildConfig (BuildConfigRequest) returns (BuildConfigReply) {}
@@ -21,39 +19,7 @@ service laforge {
     rpc GetHost (HostRequest) returns (HostReply) {}
     rpc GetStep (StepRequest) returns (StepReply) {}
     rpc GetError (ErrorRequest) returns (ErrorReply) {}
-    rpc GetScript (ScriptRequest) returns (ScriptReply) {}
-    rpc GetFile (FileRequest) returns (FileReply) {}
-    rpc GetCommand (CommandRequest) returns (CommandReply) {}
     rpc GetDNS_Record (DNS_RecordRequest) returns (DNS_RecordReply) {}
-}
-
-/* TEST MESSAGES */
-
-//ping info
-message PingRequest {
-  string name = 1;
-  int32 id = 2;
-}
-
-message PingReply {
-  string name = 1;
-  int32 id = 2;
-}
-
-// host info
-message HostTestRequest {
-  string name = 1;
-  int32 id = 2;  // Unique ID number for this Host.
-  string ip = 3;
-  string os = 4;
-
-}
-
-message HostTestReply {
-  string name = 1;
-  int32 id = 2;
-  string ip = 3;
-  string os = 4;
 }
 
 /*  BASE LAFORGE */
@@ -277,79 +243,6 @@ message ErrorReply {
 
 
 /* EXTRA METHODS - NOT FROM API DOC */
-
-// Scripts
-
-message ScriptRequest {
-    oneof script {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
-}
-
-message ScriptReply {
-    int32 id = 1;
-    string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string last_updated = 7;
-    string description = 8;
-    repeated string args = 9;
-}
-
-// Files 
-
-message FileRequest {
-    oneof file {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
-}
-
-message FileReply {
-    int32 id = 1;
-    string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string last_updated = 7;
-}
-
-// Commands
-
-message CommandRequest {
-    oneof command {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
-}
-
-message CommandReply {
-    int32 id = 1;
-    string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string command = 7;
-    string last_updated = 8;
-}
-
 // DNS Records
 
 message DNS_RecordRequest {
