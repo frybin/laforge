@@ -1,21 +1,34 @@
 syntax = "proto3";
 package laforge_proto_agent;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/frybin/laforge/grpc-alpha/laforge_proto/laforge_proto_agent";
 option java_multiple_files = true;
 option java_package = "io.laforge.proto.agent";
 option java_outer_classname = "laforge_Proto_agent";
 
-
 service laforge {
-    rpc GetPing (PingRequest) returns (PingReply) {}
-    rpc GetHostTest (HostTestRequest) returns (HostTestReply) {}
-    rpc GetScript (ScriptRequest) returns (ScriptReply) {}
-    rpc GetFile (FileRequest) returns (FileReply) {}
-    rpc GetCommand (CommandRequest) returns (CommandReply) {}
+  rpc GetPing(PingRequest) returns (PingReply) {}
+  rpc GetHostTest(PortRequest) returns (HostTestReply) {}
+  rpc GetPort(PingRequest) returns (PortReply) {}
+  rpc DownloadFile(FileRequest) returns (FileReply) {}
+  rpc ExecuteFile(FileDefinition) returns (FileReply) {}
+  rpc ExtractFile(FileDefinition) returns (FileReply) {}
+  rpc DeleteFile(FileDefinition) returns (FileReply) {}
+  rpc ValidateFile(FileDefinition) returns (FileReply) {}
+  rpc ValidateFileHash(FileDefinition) returns (FileReply) {}
+  rpc DeleteDir(DirectoryDefinition) returns (DirectoryReply) {}
+  rpc ValidateDir(DirectoryDefinition) returns (DirectoryReply) {}
+  rpc RunCommand(CommandRequest) returns (CommandReply) {}
+  rpc RequestReboot(Reboot) returns (google.protobuf.Empty) {}
+  rpc ReportReboot(RebootReportRequest) returns (RebootReportReply) {}
+  rpc SetAdminPassword(PasswordRequest) returns (PasswordReply) {}
+  rpc ValidateProcess(ProcessRequest) returns (ProcessReply) {}
 }
 
-//ping info
+// ping info
 message PingRequest {
   string name = 1;
   int32 id = 2;
@@ -29,10 +42,9 @@ message PingReply {
 // host info
 message HostTestRequest {
   string name = 1;
-  int32 id = 2;  // Unique ID number for this Host.
+  int32 id = 2; // Unique ID number for this Host.
   string ip = 3;
   string os = 4;
-
 }
 
 message HostTestReply {
@@ -42,74 +54,99 @@ message HostTestReply {
   string os = 4;
 }
 
-// Scripts
-
-message ScriptRequest {
-    oneof script {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
-}
-
-message ScriptReply {
-    int32 id = 1;
-    string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string last_updated = 7;
-    string description = 8;
-    repeated string args = 9;
-}
-
-// Files 
+// Files
 
 message FileRequest {
-    oneof file {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
+  oneof file {
+    int32 id = 1;
+    string name = 2;
+  }
 }
 
 message FileReply {
-    int32 id = 1;
-    string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string last_updated = 7;
+  int32 id = 1;
+  string name = 2;
+  string path = 3;
+  string type = 4;
+  string md5 = 5;
+  string last_updated = 6;
 }
 
 // Commands
 
-message CommandRequest {
-    oneof command {
-        int32 id = 1;
-        string name = 2;
-        string os = 3;
-        string provider = 4;
-        string type = 5;
-        string md5 = 6;
-    }
-}
+message CommandRequest { string command = 1; }
 
 message CommandReply {
+  string command = 1;
+  string status = 2;
+}
+
+message FileDefinition {
+  oneof file {
     int32 id = 1;
     string name = 2;
-    string os = 3;
-    string provider = 4;
-    string type = 5;
-    string md5 = 6;
-    string command = 7;
-    string last_updated = 8;
+    string path = 3;
+  }
+  string md5 = 4;
+}
+
+message FileReply {
+  int32 id = 1;
+  string name = 2;
+  string path = 3;
+  string type = 4;
+  string md5 = 5;
+  string status = 6;
+}
+
+message DirectoryDefinition { string path = 1; }
+
+message DirectoryReply {
+  string path = 1;
+  string status = 2;
+}
+
+message Reboot { google.protobuf.Timestamp timestamp = 1; }
+
+message RebootReportRequest {
+  string name = 1;
+  int32 id = 2; // Unique ID number for this Host.
+  string ip = 3;
+  string os = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+message RebootReportReply {
+  int32 id = 1;
+  string status = 2;
+}
+
+message PasswordRequest {
+  string password = 1; // Will need to be either a Hash or Encrypted.
+}
+
+message PasswordReply { string status = 1; }
+
+message ProcessRequest {
+  oneof process {
+    int32 id = 1;
+    string name = 2;
+  }
+}
+
+message ProcessReply {
+  int32 id = 1;
+  string name = 2;
+  string status = 3;
+}
+
+message PortRequest {
+  string port = 1;
+  string protocol = 2;
+}
+
+message PortReply {
+  string port = 1;
+  string protocol = 2;
+  string status = 3;
 }
