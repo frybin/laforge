@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
+	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -45,7 +45,7 @@ func hostTest(c pb.LaforgeClient, name string) {
 // Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
 
 // Request Competition - by string name, string id
-func competition(c pb.LaforgeClient, name string) {
+/*func competition(c pb.LaforgeClient, name string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -81,7 +81,7 @@ func environment(c pb.LaforgeClient, name string) {
 	//print server demo response
 	log.Printf("Environment Name: %v | ID: %v | Comp ID: %v | Owner ID: %v | State: %s | Atts: %v | Networks: %v | Teams: %v", r.GetName(), r.GetId(), r.GetCompetitionId(), r.GetOwnerId(), r.GetState(), r.GetAttrs(), r.GetNetworks(), r.GetTeams())
 }
-
+*/
 
 
 func main() {
@@ -109,15 +109,14 @@ func main() {
 		name = os.Args[1]
 	}
 	
-	// competition
-	comp_name := "Demo Comp"
-	env_name := "Test Environment"
+	//comp_name := "Demo Comp"
+	//env_name := "Test Environment"
 
 	// END VARS
 
 	ping(c, name)
 	hostTest(c, name)
-	competition(c, comp_name)
-	environment(c, env_name)
+	//competition(c, comp_name)
+	//environment(c, env_name)
 
 }

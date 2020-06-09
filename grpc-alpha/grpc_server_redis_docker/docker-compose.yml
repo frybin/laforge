@@ -1,8 +1,8 @@
 version: "3.3"
 
 services:
-    grpc-server:
-        container_name: grpc-server
+    grpc-server-redis:
+        container_name: grpc-server-redis
         image: grpc-server:redis
         build:
             context: .

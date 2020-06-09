@@ -1,8 +1,8 @@
 version: "3.3"
 
 services:
-    grpc-server:
-        container_name: grpc-server
+    grpc-server-postgres:
+        container_name: grpc-server-postgres
         image: grpc-server:postgres
         build:
             context: .

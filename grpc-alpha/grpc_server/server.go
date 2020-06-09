@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"google.golang.org/grpc"
-	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto"
+	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -39,7 +39,7 @@ func (s *server) GetHostTest(ctx context.Context, in *pb.HostTestRequest) (*pb.H
 // Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
 
 //Competition Info
-func (s *server) GetCompetition(ctx context.Context, in *pb.CompetitionRequest) (*pb.CompetitionReply, error) {
+/*func (s *server) GetCompetition(ctx context.Context, in *pb.CompetitionRequest) (*pb.CompetitionReply, error) {
 	// set defaults if name or id is omitted due to oneof from client request
 	name := "N/A"
 	id := "000000"
@@ -76,6 +76,7 @@ func (s *server) GetEnvironment(ctx context.Context, in *pb.EnvironmentRequest) 
 	env := pb.EnvironmentReply{Id: id, CompetitionId: 123456, OwnerId: 1111, Name: name, State: "Not Running", Attrs: []string{"local", "internal only"}, Networks: []int32{1, 2, 3}, Teams: []int32{11, 22, 33}}
 	return &env, nil
 }
+*/
 
 
 func main() {
@@ -92,7 +93,7 @@ func main() {
 	//s := grpc.NewServer()
 
 	fmt.Println("Starting Laforge Server on port " + port)
-
+	
 	pb.RegisterLaforgeServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
