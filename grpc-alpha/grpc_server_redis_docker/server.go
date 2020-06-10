@@ -12,6 +12,8 @@ import (
 	"github.com/go-redis/redis"
 	"os"
 	"fmt"
+	"encoding/json"
+	"time"
 )
 
 const (
@@ -26,6 +28,27 @@ type server struct {
 
 /* TEST REDIS */
 
+//ping redis
+func PingRedis() {
+	//redis client setup
+	client := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"), // no password set
+		DB:       0,  // use default DB
+	})
+	
+	ctx := context.Background()
+
+	// check connection status
+	response := client.Ping(ctx)
+	if response != nil {
+		fmt.Println(response)
+		return
+	}
+	PingRedis()
+}
+
+//Redis key set + recieve
 func SetRedis(key string) {
 	//redis client setup
 	client := redis.NewClient(&redis.Options{
@@ -36,11 +59,13 @@ func SetRedis(key string) {
 	
 	ctx := context.Background()
 
-    err := client.Set(ctx, key, "value", 0).Err()
+	//set key entry
+    err := client.Set(ctx, key, time.Now(), 0).Err()
     if err != nil {
         panic(err)
     }
 
+	//get key entry
     val, err := client.Get(ctx, key).Result()
     if err != nil {
         panic(err)
@@ -49,6 +74,37 @@ func SetRedis(key string) {
 
 }
 
+//hashlist function
+func SetRedisHash(hostname string, info []byte) {
+	//redis client setup
+	client := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"), // no password set
+		DB:       0,  // use default DB
+	})
+	
+	ctx := context.Background()
+
+
+	//use redis string to run command
+	res, err := client.Do(ctx, "HSET", "hosts", hostname, info).Result()
+	if err != nil {
+		panic(err)
+		return
+	}
+	fmt.Println("Success HSET: ", res)
+
+	//get hset value
+	r, err := client.Do(ctx, "HGET", "hosts", hostname).Result()
+	if err != nil {
+		panic(err)
+		return
+	}
+	fmt.Println("Success HGET: ", r)
+
+}
+
+
 /* TEST MESSAGES */
 
 //Ping Info
@@ -56,6 +112,7 @@ func (s *server) GetPing(ctx context.Context, in *pb.PingRequest) (*pb.PingReply
 	log.Printf("Received: %v | ID: %v", in.GetName(), in.GetId())
 
 	//redis test
+	PingRedis()
 	SetRedis(in.GetName())
 
 	return &pb.PingReply{Name: "Hello " + in.GetName(), Id: in.GetId()}, nil
@@ -64,7 +121,20 @@ func (s *server) GetPing(ctx context.Context, in *pb.PingRequest) (*pb.PingReply
 //HostTest Info
 func (s *server) GetHostTest(ctx context.Context, in *pb.HostTestRequest) (*pb.HostTestReply, error) {
 	log.Printf("Got Host: %v | ID: %v | IP: %s | OS: %s", in.GetName(), in.GetId(), in.GetIp(), in.GetOs())
-	return &pb.HostTestReply{Name: in.GetName(), Id: in.GetId(), Ip: in.GetIp(), Os: in.GetOs()}, nil
+
+	response := &pb.HostTestReply{Name: in.GetName(), Id: in.GetId(), Ip: in.GetIp(), Os: in.GetOs()}
+
+
+	//test hash list
+	//convert to json for redis storage
+	var json_data []byte 
+	json_data, err := json.Marshal(response)
+	if err != nil {
+		fmt.Printf("Failed to convert to json | %v", err)
+	}
+	SetRedisHash(in.GetName(), json_data)
+
+	return response, nil
 }
 
 /*  BASE LAFORGE */
