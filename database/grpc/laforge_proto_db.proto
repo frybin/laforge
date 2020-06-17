@@ -1,0 +1,1883 @@
+syntax = "proto3";
+
+package laforge_proto_db;
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.populate_all) = true;
+option go_package = "github.com/frybin/laforge/postgresql/database/grpc";
+option (gogoproto.equal_all) = true;
+option (gogoproto.gostring_all) = true;
+
+message Result {
+    enum result_type {
+        Error = 0;
+        Success = 1;
+    }
+
+    result_type code = 1 [(gogoproto.customname) = 'Code', (gogoproto.moretags) = 'json:"code" xml:"code" db:"code"'];
+    string message = 2 [(gogoproto.customname) = 'Message', (gogoproto.moretags) = 'json:"message" xml:"message" db:"message"'];
+}
+
+
+message packet {
+    enum packet_type_t {
+        Error = 0;
+         
+        //PktBuildConfigs = 11;
+        //PktBuilds = 19;
+        //PktCommandDefinition = 6;
+        //PktCompetitionUsers = 2;
+        //PktCompetitions = 3;
+        //PktDNSRecordDefinitions = 15;
+        //PktEnvironments = 12;
+        //PktHostDefinitions = 5;
+        //PktIdentityDefinitions = 7;
+        //PktIncludedHosts = 14;
+        //PktIncludedNetworks = 13;
+        //PktIncludedSteps = 16;
+        //PktIncludedTeams = 17;
+        //PktNetworkDefintions = 8;
+        //PktProvisionedHosts = 21;
+        //PktProvisionedNetworks = 18;
+        //PktProvisionedSteps = 22;
+        //PktProvisionedTeams = 20;
+        //PktRemoteFileDefinitions = 9;
+        //PktRoles = 0;
+        //PktScriptDefinitions = 10;
+        //PktStepDefinitions = 4;
+        //PktUsers = 1;
+    }
+
+    packet_type_t id = 2;
+    bytes data = 3;
+}
+service Backend {
+
+    rpc GetAllBuildConfigs(GetAllBuildConfigsRequest) returns (GetAllBuildConfigsResponse);
+    rpc GetBuildConfigs(GetBuildConfigsRequest) returns (GetBuildConfigsResponse);
+    rpc AddBuildConfigs(AddBuildConfigsRequest) returns (AddBuildConfigsResponse);
+    rpc UpdateBuildConfigs(UpdateBuildConfigsRequest) returns (UpdateBuildConfigsResponse);
+    rpc DeleteBuildConfigs(DeleteBuildConfigsRequest) returns (DeleteBuildConfigsResponse);
+    rpc GetAllBuilds(GetAllBuildsRequest) returns (GetAllBuildsResponse);
+    rpc GetBuilds(GetBuildsRequest) returns (GetBuildsResponse);
+    rpc AddBuilds(AddBuildsRequest) returns (AddBuildsResponse);
+    rpc UpdateBuilds(UpdateBuildsRequest) returns (UpdateBuildsResponse);
+    rpc DeleteBuilds(DeleteBuildsRequest) returns (DeleteBuildsResponse);
+    rpc GetAllCommandDefinition(GetAllCommandDefinitionRequest) returns (GetAllCommandDefinitionResponse);
+    rpc GetCommandDefinition(GetCommandDefinitionRequest) returns (GetCommandDefinitionResponse);
+    rpc AddCommandDefinition(AddCommandDefinitionRequest) returns (AddCommandDefinitionResponse);
+    rpc UpdateCommandDefinition(UpdateCommandDefinitionRequest) returns (UpdateCommandDefinitionResponse);
+    rpc DeleteCommandDefinition(DeleteCommandDefinitionRequest) returns (DeleteCommandDefinitionResponse);
+    rpc GetAllCompetitionUsers(GetAllCompetitionUsersRequest) returns (GetAllCompetitionUsersResponse);
+    rpc GetCompetitionUsers(GetCompetitionUsersRequest) returns (GetCompetitionUsersResponse);
+    rpc AddCompetitionUsers(AddCompetitionUsersRequest) returns (AddCompetitionUsersResponse);
+    rpc UpdateCompetitionUsers(UpdateCompetitionUsersRequest) returns (UpdateCompetitionUsersResponse);
+    rpc DeleteCompetitionUsers(DeleteCompetitionUsersRequest) returns (DeleteCompetitionUsersResponse);
+    rpc GetAllCompetitions(GetAllCompetitionsRequest) returns (GetAllCompetitionsResponse);
+    rpc GetCompetitions(GetCompetitionsRequest) returns (GetCompetitionsResponse);
+    rpc AddCompetitions(AddCompetitionsRequest) returns (AddCompetitionsResponse);
+    rpc UpdateCompetitions(UpdateCompetitionsRequest) returns (UpdateCompetitionsResponse);
+    rpc DeleteCompetitions(DeleteCompetitionsRequest) returns (DeleteCompetitionsResponse);
+    rpc GetAllDNSRecordDefinitions(GetAllDNSRecordDefinitionsRequest) returns (GetAllDNSRecordDefinitionsResponse);
+    rpc GetDNSRecordDefinitions(GetDNSRecordDefinitionsRequest) returns (GetDNSRecordDefinitionsResponse);
+    rpc AddDNSRecordDefinitions(AddDNSRecordDefinitionsRequest) returns (AddDNSRecordDefinitionsResponse);
+    rpc UpdateDNSRecordDefinitions(UpdateDNSRecordDefinitionsRequest) returns (UpdateDNSRecordDefinitionsResponse);
+    rpc DeleteDNSRecordDefinitions(DeleteDNSRecordDefinitionsRequest) returns (DeleteDNSRecordDefinitionsResponse);
+    rpc GetAllEnvironments(GetAllEnvironmentsRequest) returns (GetAllEnvironmentsResponse);
+    rpc GetEnvironments(GetEnvironmentsRequest) returns (GetEnvironmentsResponse);
+    rpc AddEnvironments(AddEnvironmentsRequest) returns (AddEnvironmentsResponse);
+    rpc UpdateEnvironments(UpdateEnvironmentsRequest) returns (UpdateEnvironmentsResponse);
+    rpc DeleteEnvironments(DeleteEnvironmentsRequest) returns (DeleteEnvironmentsResponse);
+    rpc GetAllHostDefinitions(GetAllHostDefinitionsRequest) returns (GetAllHostDefinitionsResponse);
+    rpc GetHostDefinitions(GetHostDefinitionsRequest) returns (GetHostDefinitionsResponse);
+    rpc AddHostDefinitions(AddHostDefinitionsRequest) returns (AddHostDefinitionsResponse);
+    rpc UpdateHostDefinitions(UpdateHostDefinitionsRequest) returns (UpdateHostDefinitionsResponse);
+    rpc DeleteHostDefinitions(DeleteHostDefinitionsRequest) returns (DeleteHostDefinitionsResponse);
+    rpc GetAllIdentityDefinitions(GetAllIdentityDefinitionsRequest) returns (GetAllIdentityDefinitionsResponse);
+    rpc GetIdentityDefinitions(GetIdentityDefinitionsRequest) returns (GetIdentityDefinitionsResponse);
+    rpc AddIdentityDefinitions(AddIdentityDefinitionsRequest) returns (AddIdentityDefinitionsResponse);
+    rpc UpdateIdentityDefinitions(UpdateIdentityDefinitionsRequest) returns (UpdateIdentityDefinitionsResponse);
+    rpc DeleteIdentityDefinitions(DeleteIdentityDefinitionsRequest) returns (DeleteIdentityDefinitionsResponse);
+    rpc GetAllIncludedHosts(GetAllIncludedHostsRequest) returns (GetAllIncludedHostsResponse);
+    rpc GetIncludedHosts(GetIncludedHostsRequest) returns (GetIncludedHostsResponse);
+    rpc AddIncludedHosts(AddIncludedHostsRequest) returns (AddIncludedHostsResponse);
+    rpc UpdateIncludedHosts(UpdateIncludedHostsRequest) returns (UpdateIncludedHostsResponse);
+    rpc DeleteIncludedHosts(DeleteIncludedHostsRequest) returns (DeleteIncludedHostsResponse);
+    rpc GetAllIncludedNetworks(GetAllIncludedNetworksRequest) returns (GetAllIncludedNetworksResponse);
+    rpc GetIncludedNetworks(GetIncludedNetworksRequest) returns (GetIncludedNetworksResponse);
+    rpc AddIncludedNetworks(AddIncludedNetworksRequest) returns (AddIncludedNetworksResponse);
+    rpc UpdateIncludedNetworks(UpdateIncludedNetworksRequest) returns (UpdateIncludedNetworksResponse);
+    rpc DeleteIncludedNetworks(DeleteIncludedNetworksRequest) returns (DeleteIncludedNetworksResponse);
+    rpc GetAllIncludedSteps(GetAllIncludedStepsRequest) returns (GetAllIncludedStepsResponse);
+    rpc GetIncludedSteps(GetIncludedStepsRequest) returns (GetIncludedStepsResponse);
+    rpc AddIncludedSteps(AddIncludedStepsRequest) returns (AddIncludedStepsResponse);
+    rpc UpdateIncludedSteps(UpdateIncludedStepsRequest) returns (UpdateIncludedStepsResponse);
+    rpc DeleteIncludedSteps(DeleteIncludedStepsRequest) returns (DeleteIncludedStepsResponse);
+    rpc GetAllIncludedTeams(GetAllIncludedTeamsRequest) returns (GetAllIncludedTeamsResponse);
+    rpc GetIncludedTeams(GetIncludedTeamsRequest) returns (GetIncludedTeamsResponse);
+    rpc AddIncludedTeams(AddIncludedTeamsRequest) returns (AddIncludedTeamsResponse);
+    rpc UpdateIncludedTeams(UpdateIncludedTeamsRequest) returns (UpdateIncludedTeamsResponse);
+    rpc DeleteIncludedTeams(DeleteIncludedTeamsRequest) returns (DeleteIncludedTeamsResponse);
+    rpc GetAllNetworkDefintions(GetAllNetworkDefintionsRequest) returns (GetAllNetworkDefintionsResponse);
+    rpc GetNetworkDefintions(GetNetworkDefintionsRequest) returns (GetNetworkDefintionsResponse);
+    rpc AddNetworkDefintions(AddNetworkDefintionsRequest) returns (AddNetworkDefintionsResponse);
+    rpc UpdateNetworkDefintions(UpdateNetworkDefintionsRequest) returns (UpdateNetworkDefintionsResponse);
+    rpc DeleteNetworkDefintions(DeleteNetworkDefintionsRequest) returns (DeleteNetworkDefintionsResponse);
+    rpc GetAllProvisionedHosts(GetAllProvisionedHostsRequest) returns (GetAllProvisionedHostsResponse);
+    rpc GetProvisionedHosts(GetProvisionedHostsRequest) returns (GetProvisionedHostsResponse);
+    rpc AddProvisionedHosts(AddProvisionedHostsRequest) returns (AddProvisionedHostsResponse);
+    rpc UpdateProvisionedHosts(UpdateProvisionedHostsRequest) returns (UpdateProvisionedHostsResponse);
+    rpc DeleteProvisionedHosts(DeleteProvisionedHostsRequest) returns (DeleteProvisionedHostsResponse);
+    rpc GetAllProvisionedNetworks(GetAllProvisionedNetworksRequest) returns (GetAllProvisionedNetworksResponse);
+    rpc GetProvisionedNetworks(GetProvisionedNetworksRequest) returns (GetProvisionedNetworksResponse);
+    rpc AddProvisionedNetworks(AddProvisionedNetworksRequest) returns (AddProvisionedNetworksResponse);
+    rpc UpdateProvisionedNetworks(UpdateProvisionedNetworksRequest) returns (UpdateProvisionedNetworksResponse);
+    rpc DeleteProvisionedNetworks(DeleteProvisionedNetworksRequest) returns (DeleteProvisionedNetworksResponse);
+    rpc GetAllProvisionedSteps(GetAllProvisionedStepsRequest) returns (GetAllProvisionedStepsResponse);
+    rpc GetProvisionedSteps(GetProvisionedStepsRequest) returns (GetProvisionedStepsResponse);
+    rpc AddProvisionedSteps(AddProvisionedStepsRequest) returns (AddProvisionedStepsResponse);
+    rpc UpdateProvisionedSteps(UpdateProvisionedStepsRequest) returns (UpdateProvisionedStepsResponse);
+    rpc DeleteProvisionedSteps(DeleteProvisionedStepsRequest) returns (DeleteProvisionedStepsResponse);
+    rpc GetAllProvisionedTeams(GetAllProvisionedTeamsRequest) returns (GetAllProvisionedTeamsResponse);
+    rpc GetProvisionedTeams(GetProvisionedTeamsRequest) returns (GetProvisionedTeamsResponse);
+    rpc AddProvisionedTeams(AddProvisionedTeamsRequest) returns (AddProvisionedTeamsResponse);
+    rpc UpdateProvisionedTeams(UpdateProvisionedTeamsRequest) returns (UpdateProvisionedTeamsResponse);
+    rpc DeleteProvisionedTeams(DeleteProvisionedTeamsRequest) returns (DeleteProvisionedTeamsResponse);
+    rpc GetAllRemoteFileDefinitions(GetAllRemoteFileDefinitionsRequest) returns (GetAllRemoteFileDefinitionsResponse);
+    rpc GetRemoteFileDefinitions(GetRemoteFileDefinitionsRequest) returns (GetRemoteFileDefinitionsResponse);
+    rpc AddRemoteFileDefinitions(AddRemoteFileDefinitionsRequest) returns (AddRemoteFileDefinitionsResponse);
+    rpc UpdateRemoteFileDefinitions(UpdateRemoteFileDefinitionsRequest) returns (UpdateRemoteFileDefinitionsResponse);
+    rpc DeleteRemoteFileDefinitions(DeleteRemoteFileDefinitionsRequest) returns (DeleteRemoteFileDefinitionsResponse);
+    rpc GetAllRoles(GetAllRolesRequest) returns (GetAllRolesResponse);
+    rpc GetRoles(GetRolesRequest) returns (GetRolesResponse);
+    rpc AddRoles(AddRolesRequest) returns (AddRolesResponse);
+    rpc UpdateRoles(UpdateRolesRequest) returns (UpdateRolesResponse);
+    rpc DeleteRoles(DeleteRolesRequest) returns (DeleteRolesResponse);
+    rpc GetAllScriptDefinitions(GetAllScriptDefinitionsRequest) returns (GetAllScriptDefinitionsResponse);
+    rpc GetScriptDefinitions(GetScriptDefinitionsRequest) returns (GetScriptDefinitionsResponse);
+    rpc AddScriptDefinitions(AddScriptDefinitionsRequest) returns (AddScriptDefinitionsResponse);
+    rpc UpdateScriptDefinitions(UpdateScriptDefinitionsRequest) returns (UpdateScriptDefinitionsResponse);
+    rpc DeleteScriptDefinitions(DeleteScriptDefinitionsRequest) returns (DeleteScriptDefinitionsResponse);
+    rpc GetAllStepDefinitions(GetAllStepDefinitionsRequest) returns (GetAllStepDefinitionsResponse);
+    rpc GetStepDefinitions(GetStepDefinitionsRequest) returns (GetStepDefinitionsResponse);
+    rpc AddStepDefinitions(AddStepDefinitionsRequest) returns (AddStepDefinitionsResponse);
+    rpc UpdateStepDefinitions(UpdateStepDefinitionsRequest) returns (UpdateStepDefinitionsResponse);
+    rpc DeleteStepDefinitions(DeleteStepDefinitionsRequest) returns (DeleteStepDefinitionsResponse);
+    rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+    rpc AddUsers(AddUsersRequest) returns (AddUsersResponse);
+    rpc UpdateUsers(UpdateUsersRequest) returns (UpdateUsersResponse);
+    rpc DeleteUsers(DeleteUsersRequest) returns (DeleteUsersResponse);
+}
+
+
+// table: build_configs
+message BuildConfigs {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] provider                                       TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string provider = 2 [(gogoproto.customname) = 'Provider', (gogoproto.moretags) = 'gorm:\"column:provider;type:TEXT;\" json:\"provider\" xml:\"provider\" db:\"provider\"'];
+    // Column: [ 2] attrs                                          JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string attrs = 3 [(gogoproto.customname) = 'Attrs', (gogoproto.moretags) = 'gorm:\"column:attrs;type:JSON;\" json:\"attrs\" xml:\"attrs\" db:\"attrs\"'];
+    // Column: [ 3] competitions_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string competitions_id = 4 [(gogoproto.customname) = 'CompetitionsID', (gogoproto.moretags) = 'gorm:\"column:competitions_id;type:UUID;\" json:\"competitions_id\" xml:\"competitions_id\" db:\"competitions_id\"'];
+}
+
+
+message GetAllBuildConfigsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllBuildConfigsResponse {
+    Result result = 1;
+    repeated BuildConfigs data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetBuildConfigsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetBuildConfigsResponse {
+    Result result = 1;
+    BuildConfigs data = 2;
+}
+message AddBuildConfigsRequest {
+    BuildConfigs data = 1;
+}
+
+message AddBuildConfigsResponse {
+    Result result = 1;
+    BuildConfigs data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateBuildConfigsRequest {
+    BuildConfigs data = 1;
+}
+
+message UpdateBuildConfigsResponse {
+    Result result = 1;
+    BuildConfigs data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteBuildConfigsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteBuildConfigsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: builds
+message Builds {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] environments_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string environments_id = 2 [(gogoproto.customname) = 'EnvironmentsID', (gogoproto.moretags) = 'gorm:\"column:environments_id;type:UUID;\" json:\"environments_id\" xml:\"environments_id\" db:\"environments_id\"'];
+    // Column: [ 2] build_configs_id                               UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string build_configs_id = 3 [(gogoproto.customname) = 'BuildConfigsID', (gogoproto.moretags) = 'gorm:\"column:build_configs_id;type:UUID;\" json:\"build_configs_id\" xml:\"build_configs_id\" db:\"build_configs_id\"'];
+    // Column: [ 3] state                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string state = 4 [(gogoproto.customname) = 'State', (gogoproto.moretags) = 'gorm:\"column:state;type:TEXT;\" json:\"state\" xml:\"state\" db:\"state\"'];
+    // Column: [ 4] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 5 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 5] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 6 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 6] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 7 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllBuildsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllBuildsResponse {
+    Result result = 1;
+    repeated Builds data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetBuildsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetBuildsResponse {
+    Result result = 1;
+    Builds data = 2;
+}
+message AddBuildsRequest {
+    Builds data = 1;
+}
+
+message AddBuildsResponse {
+    Result result = 1;
+    Builds data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateBuildsRequest {
+    Builds data = 1;
+}
+
+message UpdateBuildsResponse {
+    Result result = 1;
+    Builds data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteBuildsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteBuildsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: command_definition
+message CommandDefinition {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] type                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string type = 2 [(gogoproto.customname) = 'Type', (gogoproto.moretags) = 'gorm:\"column:type;type:TEXT;\" json:\"type\" xml:\"type\" db:\"type\"'];
+    // Column: [ 2] name                                           TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string name = 3 [(gogoproto.customname) = 'Name', (gogoproto.moretags) = 'gorm:\"column:name;type:TEXT;\" json:\"name\" xml:\"name\" db:\"name\"'];
+}
+
+
+message GetAllCommandDefinitionRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllCommandDefinitionResponse {
+    Result result = 1;
+    repeated CommandDefinition data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetCommandDefinitionRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetCommandDefinitionResponse {
+    Result result = 1;
+    CommandDefinition data = 2;
+}
+message AddCommandDefinitionRequest {
+    CommandDefinition data = 1;
+}
+
+message AddCommandDefinitionResponse {
+    Result result = 1;
+    CommandDefinition data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateCommandDefinitionRequest {
+    CommandDefinition data = 1;
+}
+
+message UpdateCommandDefinitionResponse {
+    Result result = 1;
+    CommandDefinition data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteCommandDefinitionRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteCommandDefinitionResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: competition_users
+message CompetitionUsers {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] users_id                                       UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string users_id = 2 [(gogoproto.customname) = 'UsersID', (gogoproto.moretags) = 'gorm:\"column:users_id;type:UUID;\" json:\"users_id\" xml:\"users_id\" db:\"users_id\"'];
+    // Column: [ 2] competitions_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string competitions_id = 3 [(gogoproto.customname) = 'CompetitionsID', (gogoproto.moretags) = 'gorm:\"column:competitions_id;type:UUID;\" json:\"competitions_id\" xml:\"competitions_id\" db:\"competitions_id\"'];
+}
+
+
+message GetAllCompetitionUsersRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllCompetitionUsersResponse {
+    Result result = 1;
+    repeated CompetitionUsers data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetCompetitionUsersRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetCompetitionUsersResponse {
+    Result result = 1;
+    CompetitionUsers data = 2;
+}
+message AddCompetitionUsersRequest {
+    CompetitionUsers data = 1;
+}
+
+message AddCompetitionUsersResponse {
+    Result result = 1;
+    CompetitionUsers data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateCompetitionUsersRequest {
+    CompetitionUsers data = 1;
+}
+
+message UpdateCompetitionUsersResponse {
+    Result result = 1;
+    CompetitionUsers data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteCompetitionUsersRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteCompetitionUsersResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: competitions
+message Competitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] name                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string name = 2 [(gogoproto.customname) = 'Name', (gogoproto.moretags) = 'gorm:\"column:name;type:TEXT;\" json:\"name\" xml:\"name\" db:\"name\"'];
+}
+
+
+message GetAllCompetitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllCompetitionsResponse {
+    Result result = 1;
+    repeated Competitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetCompetitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetCompetitionsResponse {
+    Result result = 1;
+    Competitions data = 2;
+}
+message AddCompetitionsRequest {
+    Competitions data = 1;
+}
+
+message AddCompetitionsResponse {
+    Result result = 1;
+    Competitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateCompetitionsRequest {
+    Competitions data = 1;
+}
+
+message UpdateCompetitionsResponse {
+    Result result = 1;
+    Competitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteCompetitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteCompetitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: dns_record_definitions
+message DNSRecordDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] type                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string type = 2 [(gogoproto.customname) = 'Type', (gogoproto.moretags) = 'gorm:\"column:type;type:TEXT;\" json:\"type\" xml:\"type\" db:\"type\"'];
+    // Column: [ 2] name                                           TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string name = 3 [(gogoproto.customname) = 'Name', (gogoproto.moretags) = 'gorm:\"column:name;type:TEXT;\" json:\"name\" xml:\"name\" db:\"name\"'];
+}
+
+
+message GetAllDNSRecordDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllDNSRecordDefinitionsResponse {
+    Result result = 1;
+    repeated DNSRecordDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetDNSRecordDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetDNSRecordDefinitionsResponse {
+    Result result = 1;
+    DNSRecordDefinitions data = 2;
+}
+message AddDNSRecordDefinitionsRequest {
+    DNSRecordDefinitions data = 1;
+}
+
+message AddDNSRecordDefinitionsResponse {
+    Result result = 1;
+    DNSRecordDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateDNSRecordDefinitionsRequest {
+    DNSRecordDefinitions data = 1;
+}
+
+message UpdateDNSRecordDefinitionsResponse {
+    Result result = 1;
+    DNSRecordDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteDNSRecordDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteDNSRecordDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: environments
+message Environments {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] competitions_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string competitions_id = 2 [(gogoproto.customname) = 'CompetitionsID', (gogoproto.moretags) = 'gorm:\"column:competitions_id;type:UUID;\" json:\"competitions_id\" xml:\"competitions_id\" db:\"competitions_id\"'];
+    // Column: [ 2] roles_id                                       UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string roles_id = 3 [(gogoproto.customname) = 'RolesID', (gogoproto.moretags) = 'gorm:\"column:roles_id;type:UUID;\" json:\"roles_id\" xml:\"roles_id\" db:\"roles_id\"'];
+    // Column: [ 3] name                                           TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string name = 4 [(gogoproto.customname) = 'Name', (gogoproto.moretags) = 'gorm:\"column:name;type:TEXT;\" json:\"name\" xml:\"name\" db:\"name\"'];
+    // Column: [ 4] attrs                                          JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string attrs = 5 [(gogoproto.customname) = 'Attrs', (gogoproto.moretags) = 'gorm:\"column:attrs;type:JSON;\" json:\"attrs\" xml:\"attrs\" db:\"attrs\"'];
+    // Column: [ 5] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 6 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 6] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 7 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 7] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 8 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllEnvironmentsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllEnvironmentsResponse {
+    Result result = 1;
+    repeated Environments data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetEnvironmentsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetEnvironmentsResponse {
+    Result result = 1;
+    Environments data = 2;
+}
+message AddEnvironmentsRequest {
+    Environments data = 1;
+}
+
+message AddEnvironmentsResponse {
+    Result result = 1;
+    Environments data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateEnvironmentsRequest {
+    Environments data = 1;
+}
+
+message UpdateEnvironmentsResponse {
+    Result result = 1;
+    Environments data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteEnvironmentsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteEnvironmentsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: host_definitions
+message HostDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] hostname                                       TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string hostname = 2 [(gogoproto.customname) = 'Hostname', (gogoproto.moretags) = 'gorm:\"column:hostname;type:TEXT;\" json:\"hostname\" xml:\"hostname\" db:\"hostname\"'];
+    // Column: [ 2] os                                             TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string os = 3 [(gogoproto.customname) = 'Os', (gogoproto.moretags) = 'gorm:\"column:os;type:TEXT;\" json:\"os\" xml:\"os\" db:\"os\"'];
+}
+
+
+message GetAllHostDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllHostDefinitionsResponse {
+    Result result = 1;
+    repeated HostDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetHostDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetHostDefinitionsResponse {
+    Result result = 1;
+    HostDefinitions data = 2;
+}
+message AddHostDefinitionsRequest {
+    HostDefinitions data = 1;
+}
+
+message AddHostDefinitionsResponse {
+    Result result = 1;
+    HostDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateHostDefinitionsRequest {
+    HostDefinitions data = 1;
+}
+
+message UpdateHostDefinitionsResponse {
+    Result result = 1;
+    HostDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteHostDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteHostDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: identity_definitions
+message IdentityDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] email                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string email = 2 [(gogoproto.customname) = 'Email', (gogoproto.moretags) = 'gorm:\"column:email;type:TEXT;\" json:\"email\" xml:\"email\" db:\"email\"'];
+}
+
+
+message GetAllIdentityDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllIdentityDefinitionsResponse {
+    Result result = 1;
+    repeated IdentityDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetIdentityDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetIdentityDefinitionsResponse {
+    Result result = 1;
+    IdentityDefinitions data = 2;
+}
+message AddIdentityDefinitionsRequest {
+    IdentityDefinitions data = 1;
+}
+
+message AddIdentityDefinitionsResponse {
+    Result result = 1;
+    IdentityDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateIdentityDefinitionsRequest {
+    IdentityDefinitions data = 1;
+}
+
+message UpdateIdentityDefinitionsResponse {
+    Result result = 1;
+    IdentityDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteIdentityDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteIdentityDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: included_hosts
+message IncludedHosts {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] included_networks_id                           UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_networks_id = 2 [(gogoproto.customname) = 'IncludedNetworksID', (gogoproto.moretags) = 'gorm:\"column:included_networks_id;type:UUID;\" json:\"included_networks_id\" xml:\"included_networks_id\" db:\"included_networks_id\"'];
+    // Column: [ 2] host_definitions_id                            UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string host_definitions_id = 3 [(gogoproto.customname) = 'HostDefinitionsID', (gogoproto.moretags) = 'gorm:\"column:host_definitions_id;type:UUID;\" json:\"host_definitions_id\" xml:\"host_definitions_id\" db:\"host_definitions_id\"'];
+    // Column: [ 3] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 4 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 4] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 5 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 5] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 6 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+    // Column: [ 6] attrs                                          JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string attrs = 7 [(gogoproto.customname) = 'Attrs', (gogoproto.moretags) = 'gorm:\"column:attrs;type:JSON;\" json:\"attrs\" xml:\"attrs\" db:\"attrs\"'];
+}
+
+
+message GetAllIncludedHostsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllIncludedHostsResponse {
+    Result result = 1;
+    repeated IncludedHosts data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetIncludedHostsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetIncludedHostsResponse {
+    Result result = 1;
+    IncludedHosts data = 2;
+}
+message AddIncludedHostsRequest {
+    IncludedHosts data = 1;
+}
+
+message AddIncludedHostsResponse {
+    Result result = 1;
+    IncludedHosts data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateIncludedHostsRequest {
+    IncludedHosts data = 1;
+}
+
+message UpdateIncludedHostsResponse {
+    Result result = 1;
+    IncludedHosts data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteIncludedHostsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteIncludedHostsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: included_networks
+message IncludedNetworks {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] environments_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string environments_id = 2 [(gogoproto.customname) = 'EnvironmentsID', (gogoproto.moretags) = 'gorm:\"column:environments_id;type:UUID;\" json:\"environments_id\" xml:\"environments_id\" db:\"environments_id\"'];
+    // Column: [ 2] network_defintions_id                          UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string network_defintions_id = 3 [(gogoproto.customname) = 'NetworkDefintionsID', (gogoproto.moretags) = 'gorm:\"column:network_defintions_id;type:UUID;\" json:\"network_defintions_id\" xml:\"network_defintions_id\" db:\"network_defintions_id\"'];
+    // Column: [ 3] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 4 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 4] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 5 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 5] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 6 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+    // Column: [ 6] attrs                                          JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string attrs = 7 [(gogoproto.customname) = 'Attrs', (gogoproto.moretags) = 'gorm:\"column:attrs;type:JSON;\" json:\"attrs\" xml:\"attrs\" db:\"attrs\"'];
+}
+
+
+message GetAllIncludedNetworksRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllIncludedNetworksResponse {
+    Result result = 1;
+    repeated IncludedNetworks data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetIncludedNetworksRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetIncludedNetworksResponse {
+    Result result = 1;
+    IncludedNetworks data = 2;
+}
+message AddIncludedNetworksRequest {
+    IncludedNetworks data = 1;
+}
+
+message AddIncludedNetworksResponse {
+    Result result = 1;
+    IncludedNetworks data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateIncludedNetworksRequest {
+    IncludedNetworks data = 1;
+}
+
+message UpdateIncludedNetworksResponse {
+    Result result = 1;
+    IncludedNetworks data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteIncludedNetworksRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteIncludedNetworksResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: included_steps
+message IncludedSteps {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] included_hosts_id                              UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_hosts_id = 2 [(gogoproto.customname) = 'IncludedHostsID', (gogoproto.moretags) = 'gorm:\"column:included_hosts_id;type:UUID;\" json:\"included_hosts_id\" xml:\"included_hosts_id\" db:\"included_hosts_id\"'];
+    // Column: [ 2] step_definitions_id                            UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string step_definitions_id = 3 [(gogoproto.customname) = 'StepDefinitionsID', (gogoproto.moretags) = 'gorm:\"column:step_definitions_id;type:UUID;\" json:\"step_definitions_id\" xml:\"step_definitions_id\" db:\"step_definitions_id\"'];
+    // Column: [ 3] step_definition_type                           TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string step_definition_type = 4 [(gogoproto.customname) = 'StepDefinitionType', (gogoproto.moretags) = 'gorm:\"column:step_definition_type;type:TEXT;\" json:\"step_definition_type\" xml:\"step_definition_type\" db:\"step_definition_type\"'];
+    // Column: [ 4] step_offset                                    INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+    int32 step_offset = 5 [(gogoproto.customname) = 'StepOffset', (gogoproto.moretags) = 'gorm:\"column:step_offset;type:INT8;\" json:\"step_offset\" xml:\"step_offset\" db:\"step_offset\"'];
+}
+
+
+message GetAllIncludedStepsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllIncludedStepsResponse {
+    Result result = 1;
+    repeated IncludedSteps data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetIncludedStepsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetIncludedStepsResponse {
+    Result result = 1;
+    IncludedSteps data = 2;
+}
+message AddIncludedStepsRequest {
+    IncludedSteps data = 1;
+}
+
+message AddIncludedStepsResponse {
+    Result result = 1;
+    IncludedSteps data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateIncludedStepsRequest {
+    IncludedSteps data = 1;
+}
+
+message UpdateIncludedStepsResponse {
+    Result result = 1;
+    IncludedSteps data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteIncludedStepsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteIncludedStepsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: included_teams
+message IncludedTeams {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] environments_id                                UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string environments_id = 2 [(gogoproto.customname) = 'EnvironmentsID', (gogoproto.moretags) = 'gorm:\"column:environments_id;type:UUID;\" json:\"environments_id\" xml:\"environments_id\" db:\"environments_id\"'];
+    // Column: [ 2] number                                         INT2                 null: false  primary: false  isArray: false  auto: false  col: INT2            len: -1      default: []
+    int32 number = 3 [(gogoproto.customname) = 'Number', (gogoproto.moretags) = 'gorm:\"column:number;type:INT2;\" json:\"number\" xml:\"number\" db:\"number\"'];
+    // Column: [ 3] tags                                           JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string tags = 4 [(gogoproto.customname) = 'Tags', (gogoproto.moretags) = 'gorm:\"column:tags;type:JSON;\" json:\"tags\" xml:\"tags\" db:\"tags\"'];
+    // Column: [ 4] enabled                                        BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
+    bool enabled = 5 [(gogoproto.customname) = 'Enabled', (gogoproto.moretags) = 'gorm:\"column:enabled;type:BOOL;\" json:\"enabled\" xml:\"enabled\" db:\"enabled\"'];
+    // Column: [ 5] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 6 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 6] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 7 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 7] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 8 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllIncludedTeamsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllIncludedTeamsResponse {
+    Result result = 1;
+    repeated IncludedTeams data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetIncludedTeamsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetIncludedTeamsResponse {
+    Result result = 1;
+    IncludedTeams data = 2;
+}
+message AddIncludedTeamsRequest {
+    IncludedTeams data = 1;
+}
+
+message AddIncludedTeamsResponse {
+    Result result = 1;
+    IncludedTeams data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateIncludedTeamsRequest {
+    IncludedTeams data = 1;
+}
+
+message UpdateIncludedTeamsResponse {
+    Result result = 1;
+    IncludedTeams data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteIncludedTeamsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteIncludedTeamsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: network_defintions
+message NetworkDefintions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] domain                                         TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string domain = 2 [(gogoproto.customname) = 'Domain', (gogoproto.moretags) = 'gorm:\"column:domain;type:TEXT;\" json:\"domain\" xml:\"domain\" db:\"domain\"'];
+}
+
+
+message GetAllNetworkDefintionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllNetworkDefintionsResponse {
+    Result result = 1;
+    repeated NetworkDefintions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetNetworkDefintionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetNetworkDefintionsResponse {
+    Result result = 1;
+    NetworkDefintions data = 2;
+}
+message AddNetworkDefintionsRequest {
+    NetworkDefintions data = 1;
+}
+
+message AddNetworkDefintionsResponse {
+    Result result = 1;
+    NetworkDefintions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateNetworkDefintionsRequest {
+    NetworkDefintions data = 1;
+}
+
+message UpdateNetworkDefintionsResponse {
+    Result result = 1;
+    NetworkDefintions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteNetworkDefintionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteNetworkDefintionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: provisioned_hosts
+message ProvisionedHosts {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] included_hosts_id                              UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_hosts_id = 2 [(gogoproto.customname) = 'IncludedHostsID', (gogoproto.moretags) = 'gorm:\"column:included_hosts_id;type:UUID;\" json:\"included_hosts_id\" xml:\"included_hosts_id\" db:\"included_hosts_id\"'];
+    // Column: [ 2] provisioned_networks_id                        UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string provisioned_networks_id = 3 [(gogoproto.customname) = 'ProvisionedNetworksID', (gogoproto.moretags) = 'gorm:\"column:provisioned_networks_id;type:UUID;\" json:\"provisioned_networks_id\" xml:\"provisioned_networks_id\" db:\"provisioned_networks_id\"'];
+    // Column: [ 3] state                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string state = 4 [(gogoproto.customname) = 'State', (gogoproto.moretags) = 'gorm:\"column:state;type:TEXT;\" json:\"state\" xml:\"state\" db:\"state\"'];
+    // Column: [ 4] ip_address                                     TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string ip_address = 5 [(gogoproto.customname) = 'IPAddress', (gogoproto.moretags) = 'gorm:\"column:ip_address;type:TEXT;\" json:\"ip_address\" xml:\"ip_address\" db:\"ip_address\"'];
+    // Column: [ 5] conn_info                                      JSON                 null: true   primary: false  isArray: false  auto: false  col: JSON            len: -1      default: []
+    string conn_info = 6 [(gogoproto.customname) = 'ConnInfo', (gogoproto.moretags) = 'gorm:\"column:conn_info;type:JSON;\" json:\"conn_info\" xml:\"conn_info\" db:\"conn_info\"'];
+    // Column: [ 6] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 7 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 7] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 8 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 8] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 9 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllProvisionedHostsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllProvisionedHostsResponse {
+    Result result = 1;
+    repeated ProvisionedHosts data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetProvisionedHostsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetProvisionedHostsResponse {
+    Result result = 1;
+    ProvisionedHosts data = 2;
+}
+message AddProvisionedHostsRequest {
+    ProvisionedHosts data = 1;
+}
+
+message AddProvisionedHostsResponse {
+    Result result = 1;
+    ProvisionedHosts data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateProvisionedHostsRequest {
+    ProvisionedHosts data = 1;
+}
+
+message UpdateProvisionedHostsResponse {
+    Result result = 1;
+    ProvisionedHosts data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteProvisionedHostsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteProvisionedHostsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: provisioned_networks
+message ProvisionedNetworks {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] included_networks_id                           UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_networks_id = 2 [(gogoproto.customname) = 'IncludedNetworksID', (gogoproto.moretags) = 'gorm:\"column:included_networks_id;type:UUID;\" json:\"included_networks_id\" xml:\"included_networks_id\" db:\"included_networks_id\"'];
+    // Column: [ 2] included_teams_id                              UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_teams_id = 3 [(gogoproto.customname) = 'IncludedTeamsID', (gogoproto.moretags) = 'gorm:\"column:included_teams_id;type:UUID;\" json:\"included_teams_id\" xml:\"included_teams_id\" db:\"included_teams_id\"'];
+    // Column: [ 3] state                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string state = 4 [(gogoproto.customname) = 'State', (gogoproto.moretags) = 'gorm:\"column:state;type:TEXT;\" json:\"state\" xml:\"state\" db:\"state\"'];
+    // Column: [ 4] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 5 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 5] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 6 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 6] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 7 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllProvisionedNetworksRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllProvisionedNetworksResponse {
+    Result result = 1;
+    repeated ProvisionedNetworks data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetProvisionedNetworksRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetProvisionedNetworksResponse {
+    Result result = 1;
+    ProvisionedNetworks data = 2;
+}
+message AddProvisionedNetworksRequest {
+    ProvisionedNetworks data = 1;
+}
+
+message AddProvisionedNetworksResponse {
+    Result result = 1;
+    ProvisionedNetworks data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateProvisionedNetworksRequest {
+    ProvisionedNetworks data = 1;
+}
+
+message UpdateProvisionedNetworksResponse {
+    Result result = 1;
+    ProvisionedNetworks data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteProvisionedNetworksRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteProvisionedNetworksResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: provisioned_steps
+message ProvisionedSteps {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] state                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string state = 2 [(gogoproto.customname) = 'State', (gogoproto.moretags) = 'gorm:\"column:state;type:TEXT;\" json:\"state\" xml:\"state\" db:\"state\"'];
+    // Column: [ 2] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 3 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 3] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 4 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 4] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 5 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+    // Column: [ 5] provisioned_hosts_id                           UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string provisioned_hosts_id = 6 [(gogoproto.customname) = 'ProvisionedHostsID', (gogoproto.moretags) = 'gorm:\"column:provisioned_hosts_id;type:UUID;\" json:\"provisioned_hosts_id\" xml:\"provisioned_hosts_id\" db:\"provisioned_hosts_id\"'];
+}
+
+
+message GetAllProvisionedStepsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllProvisionedStepsResponse {
+    Result result = 1;
+    repeated ProvisionedSteps data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetProvisionedStepsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetProvisionedStepsResponse {
+    Result result = 1;
+    ProvisionedSteps data = 2;
+}
+message AddProvisionedStepsRequest {
+    ProvisionedSteps data = 1;
+}
+
+message AddProvisionedStepsResponse {
+    Result result = 1;
+    ProvisionedSteps data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateProvisionedStepsRequest {
+    ProvisionedSteps data = 1;
+}
+
+message UpdateProvisionedStepsResponse {
+    Result result = 1;
+    ProvisionedSteps data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteProvisionedStepsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteProvisionedStepsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: provisioned_teams
+message ProvisionedTeams {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] included_teams_id                              UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string included_teams_id = 2 [(gogoproto.customname) = 'IncludedTeamsID', (gogoproto.moretags) = 'gorm:\"column:included_teams_id;type:UUID;\" json:\"included_teams_id\" xml:\"included_teams_id\" db:\"included_teams_id\"'];
+    // Column: [ 2] build_configs_id                               UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string build_configs_id = 3 [(gogoproto.customname) = 'BuildConfigsID', (gogoproto.moretags) = 'gorm:\"column:build_configs_id;type:UUID;\" json:\"build_configs_id\" xml:\"build_configs_id\" db:\"build_configs_id\"'];
+    // Column: [ 3] state                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string state = 4 [(gogoproto.customname) = 'State', (gogoproto.moretags) = 'gorm:\"column:state;type:TEXT;\" json:\"state\" xml:\"state\" db:\"state\"'];
+    // Column: [ 4] planned_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string planned_checksum = 5 [(gogoproto.customname) = 'PlannedChecksum', (gogoproto.moretags) = 'gorm:\"column:planned_checksum;type:TEXT;\" json:\"planned_checksum\" xml:\"planned_checksum\" db:\"planned_checksum\"'];
+    // Column: [ 5] current_checksum                               TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string current_checksum = 6 [(gogoproto.customname) = 'CurrentChecksum', (gogoproto.moretags) = 'gorm:\"column:current_checksum;type:TEXT;\" json:\"current_checksum\" xml:\"current_checksum\" db:\"current_checksum\"'];
+    // Column: [ 6] previous_checksum                              TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string previous_checksum = 7 [(gogoproto.customname) = 'PreviousChecksum', (gogoproto.moretags) = 'gorm:\"column:previous_checksum;type:TEXT;\" json:\"previous_checksum\" xml:\"previous_checksum\" db:\"previous_checksum\"'];
+}
+
+
+message GetAllProvisionedTeamsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllProvisionedTeamsResponse {
+    Result result = 1;
+    repeated ProvisionedTeams data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetProvisionedTeamsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetProvisionedTeamsResponse {
+    Result result = 1;
+    ProvisionedTeams data = 2;
+}
+message AddProvisionedTeamsRequest {
+    ProvisionedTeams data = 1;
+}
+
+message AddProvisionedTeamsResponse {
+    Result result = 1;
+    ProvisionedTeams data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateProvisionedTeamsRequest {
+    ProvisionedTeams data = 1;
+}
+
+message UpdateProvisionedTeamsResponse {
+    Result result = 1;
+    ProvisionedTeams data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteProvisionedTeamsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteProvisionedTeamsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: remote_file_definitions
+message RemoteFileDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] type                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string type = 2 [(gogoproto.customname) = 'Type', (gogoproto.moretags) = 'gorm:\"column:type;type:TEXT;\" json:\"type\" xml:\"type\" db:\"type\"'];
+    // Column: [ 2] source                                         TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string source = 3 [(gogoproto.customname) = 'Source', (gogoproto.moretags) = 'gorm:\"column:source;type:TEXT;\" json:\"source\" xml:\"source\" db:\"source\"'];
+}
+
+
+message GetAllRemoteFileDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllRemoteFileDefinitionsResponse {
+    Result result = 1;
+    repeated RemoteFileDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetRemoteFileDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetRemoteFileDefinitionsResponse {
+    Result result = 1;
+    RemoteFileDefinitions data = 2;
+}
+message AddRemoteFileDefinitionsRequest {
+    RemoteFileDefinitions data = 1;
+}
+
+message AddRemoteFileDefinitionsResponse {
+    Result result = 1;
+    RemoteFileDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateRemoteFileDefinitionsRequest {
+    RemoteFileDefinitions data = 1;
+}
+
+message UpdateRemoteFileDefinitionsResponse {
+    Result result = 1;
+    RemoteFileDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteRemoteFileDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteRemoteFileDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: roles
+message Roles {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] name                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string name = 2 [(gogoproto.customname) = 'Name', (gogoproto.moretags) = 'gorm:\"column:name;type:TEXT;\" json:\"name\" xml:\"name\" db:\"name\"'];
+}
+
+
+message GetAllRolesRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllRolesResponse {
+    Result result = 1;
+    repeated Roles data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetRolesRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetRolesResponse {
+    Result result = 1;
+    Roles data = 2;
+}
+message AddRolesRequest {
+    Roles data = 1;
+}
+
+message AddRolesResponse {
+    Result result = 1;
+    Roles data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateRolesRequest {
+    Roles data = 1;
+}
+
+message UpdateRolesResponse {
+    Result result = 1;
+    Roles data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteRolesRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteRolesResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: script_definitions
+message ScriptDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] type                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string type = 2 [(gogoproto.customname) = 'Type', (gogoproto.moretags) = 'gorm:\"column:type;type:TEXT;\" json:\"type\" xml:\"type\" db:\"type\"'];
+    // Column: [ 2] source_files                                   TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string source_files = 3 [(gogoproto.customname) = 'SourceFiles', (gogoproto.moretags) = 'gorm:\"column:source_files;type:TEXT;\" json:\"source_files\" xml:\"source_files\" db:\"source_files\"'];
+    // Column: [ 3] runtime                                        TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string runtime = 4 [(gogoproto.customname) = 'Runtime', (gogoproto.moretags) = 'gorm:\"column:runtime;type:TEXT;\" json:\"runtime\" xml:\"runtime\" db:\"runtime\"'];
+}
+
+
+message GetAllScriptDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllScriptDefinitionsResponse {
+    Result result = 1;
+    repeated ScriptDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetScriptDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetScriptDefinitionsResponse {
+    Result result = 1;
+    ScriptDefinitions data = 2;
+}
+message AddScriptDefinitionsRequest {
+    ScriptDefinitions data = 1;
+}
+
+message AddScriptDefinitionsResponse {
+    Result result = 1;
+    ScriptDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateScriptDefinitionsRequest {
+    ScriptDefinitions data = 1;
+}
+
+message UpdateScriptDefinitionsResponse {
+    Result result = 1;
+    ScriptDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteScriptDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteScriptDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: step_definitions
+message StepDefinitions {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] type                                           TEXT                 null: false  primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string type = 2 [(gogoproto.customname) = 'Type', (gogoproto.moretags) = 'gorm:\"column:type;type:TEXT;\" json:\"type\" xml:\"type\" db:\"type\"'];
+}
+
+
+message GetAllStepDefinitionsRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllStepDefinitionsResponse {
+    Result result = 1;
+    repeated StepDefinitions data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetStepDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetStepDefinitionsResponse {
+    Result result = 1;
+    StepDefinitions data = 2;
+}
+message AddStepDefinitionsRequest {
+    StepDefinitions data = 1;
+}
+
+message AddStepDefinitionsResponse {
+    Result result = 1;
+    StepDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateStepDefinitionsRequest {
+    StepDefinitions data = 1;
+}
+
+message UpdateStepDefinitionsResponse {
+    Result result = 1;
+    StepDefinitions data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteStepDefinitionsRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteStepDefinitionsResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+// table: users
+message Users {
+    option (gogoproto.goproto_unrecognized) = false;
+    option (gogoproto.goproto_unkeyed) = false;
+    option (gogoproto.goproto_sizecache) = false;
+
+
+    // Column: [ 0] id                                             UUID                 null: false  primary: true   isArray: false  auto: false  col: UUID            len: -1      default: []
+    string id = 1 [(gogoproto.customname) = 'ID', (gogoproto.moretags) = 'gorm:\"primary_key;column:id;type:UUID;\" json:\"id\" xml:\"id\" db:\"id\"'];
+    // Column: [ 1] email                                          TEXT                 null: true   primary: false  isArray: false  auto: false  col: TEXT            len: -1      default: []
+    string email = 2 [(gogoproto.customname) = 'Email', (gogoproto.moretags) = 'gorm:\"column:email;type:TEXT;\" json:\"email\" xml:\"email\" db:\"email\"'];
+    // Column: [ 2] roles_id                                       UUID                 null: true   primary: false  isArray: false  auto: false  col: UUID            len: -1      default: []
+    string roles_id = 3 [(gogoproto.customname) = 'RolesID', (gogoproto.moretags) = 'gorm:\"column:roles_id;type:UUID;\" json:\"roles_id\" xml:\"roles_id\" db:\"roles_id\"'];
+}
+
+
+message GetAllUsersRequest {
+    int64 page = 1;
+    int64 page_size = 2;
+    string order = 3;
+}
+
+message GetAllUsersResponse {
+    Result result = 1;
+    repeated Users data = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+    int64 total_records = 5;
+}
+
+
+message GetUsersRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message GetUsersResponse {
+    Result result = 1;
+    Users data = 2;
+}
+message AddUsersRequest {
+    Users data = 1;
+}
+
+message AddUsersResponse {
+    Result result = 1;
+    Users data = 2;
+    int64 rowsAffected = 3;
+}
+
+message UpdateUsersRequest {
+    Users data = 1;
+}
+
+message UpdateUsersResponse {
+    Result result = 1;
+    Users data = 2;
+    int64 rowsAffected = 3;
+}
+
+message DeleteUsersRequest {
+
+    string id = 1 [(gogoproto.customname) = "ID"];
+}
+
+message DeleteUsersResponse {
+    Result result = 1;
+    int64 rows_affected = 2;
+}
+
+
+
