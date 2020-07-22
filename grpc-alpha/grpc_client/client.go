@@ -6,15 +6,18 @@ import (
 	"os"
 	"time"
 
-	"google.golang.org/grpc"
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
+	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
 const (
 	address     = "localhost:50051"
 	defaultName = "Laforge Agent 1"
-	certFile = "server.crt"
+	certFile    = "server.crt"
 )
 
 /* TEST MESSAGES */
@@ -27,19 +30,34 @@ func ping(c pb.LaforgeClient, name string) {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %s | ID: %v", r.GetName(), r.GetId())
-	
+
 }
 
-func hostTest(c pb.LaforgeClient, name string) {	
+func hostTest(c pb.LaforgeClient, name string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	r, err := c.GetHostTest(ctx, &pb.HostTestRequest{Name: name, Id: 123124, Ip: "1.1.1.1", Os: "Ubuntu"})
 	if err != nil {
-			log.Fatalf("could not greet: %v", err)
+		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Host Info: %s, ID: %v, IP: %s, OS: %s", r.GetName(), r.GetId(), r.GetIp(), r.GetOs())
 }
 
+// SendHeartBeat Example
+func SendHeartBeat(c pb.LaforgeClient, name string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	hostInfo, _ := host.Info()
+	mem, _ := mem.VirtualMemory()
+	load, _ := load.Avg()
+	request := &pb.HeartbeatRequest{Id: 12345, Hostname: hostInfo.Hostname, Uptime: hostInfo.Uptime, Boottime: hostInfo.BootTime, Numprocs: hostInfo.Procs, Os: hostInfo.OS, Hostid: hostInfo.HostID, Load1: load.Load1, Load5: load.Load5, Load15: load.Load15, Totalmem: mem.Total, Freemem: mem.Free, Usedmem: mem.Used}
+	r, err := c.GetHeartBeat(ctx, request)
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Response Message: %s", r.GetStatus())
+
+}
 
 /*  BASE LAFORGE */
 // Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
@@ -83,18 +101,17 @@ func environment(c pb.LaforgeClient, name string) {
 }
 */
 
-
 func main() {
 	// Set up a connection to the server.
 	//secure connection
-	creds, cred_err := credentials.NewClientTLSFromFile(certFile, "")
-	if cred_err != nil {
-		log.Fatalf("Cred Error: %v")
+	creds, credErr := credentials.NewClientTLSFromFile(certFile, "")
+	if credErr != nil {
+		log.Fatalf("Cred Error: %v", credErr)
 	}
-	
+
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
 
-	//insecure connection 
+	//insecure connection
 	//conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
@@ -108,7 +125,7 @@ func main() {
 	if len(os.Args) > 1 {
 		name = os.Args[1]
 	}
-	
+
 	//comp_name := "Demo Comp"
 	//env_name := "Test Environment"
 
@@ -116,6 +133,7 @@ func main() {
 
 	ping(c, name)
 	hostTest(c, name)
+	SendHeartBeat(c, name)
 	//competition(c, comp_name)
 	//environment(c, env_name)
 

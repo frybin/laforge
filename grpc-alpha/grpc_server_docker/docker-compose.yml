@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+    grpc-server-redis:
+        container_name: grpc-server
+        image: grpc-server:dev
+        build:
+            context: .
+        ports:
+            - 50051:50051
+
+volumes: 
+    grpc_redis:
