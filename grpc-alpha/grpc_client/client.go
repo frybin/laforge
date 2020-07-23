@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"log"
-	"os"
+	"flag"
 	"time"
 
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
+	"github.com/kardianos/service"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
@@ -15,126 +15,156 @@ import (
 )
 
 const (
-	address     = "localhost:50051"
-	defaultName = "Laforge Agent 1"
-	certFile    = "server.crt"
+	address          = "localhost:50051"
+	defaultName      = "Laforge Agent 1"
+	certFile         = "server.crt"
+	heartbeatSeconds = 5
 )
 
-/* TEST MESSAGES */
+var (
+	logger service.Logger
+)
 
-func ping(c pb.LaforgeClient, name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := c.GetPing(ctx, &pb.PingRequest{Name: name, Id: 111111})
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
-	}
-	log.Printf("Greeting: %s | ID: %v", r.GetName(), r.GetId())
-
+// Program structures.
+//  Define Start and Stop methods.
+type program struct {
+	exit chan struct{}
 }
 
-func hostTest(c pb.LaforgeClient, name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := c.GetHostTest(ctx, &pb.HostTestRequest{Name: name, Id: 123124, Ip: "1.1.1.1", Os: "Ubuntu"})
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
-	}
-	log.Printf("Host Info: %s, ID: %v, IP: %s, OS: %s", r.GetName(), r.GetId(), r.GetIp(), r.GetOs())
+func (p *program) Start(s service.Service) error {
+	p.exit = make(chan struct{})
+
+	// Start should not block. Do the actual work async.
+	go p.run()
+	return nil
 }
 
 // SendHeartBeat Example
-func SendHeartBeat(c pb.LaforgeClient, name string) {
+func SendHeartBeat(c pb.LaforgeClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	hostInfo, _ := host.Info()
-	mem, _ := mem.VirtualMemory()
-	load, _ := load.Avg()
-	request := &pb.HeartbeatRequest{Id: 12345, Hostname: hostInfo.Hostname, Uptime: hostInfo.Uptime, Boottime: hostInfo.BootTime, Numprocs: hostInfo.Procs, Os: hostInfo.OS, Hostid: hostInfo.HostID, Load1: load.Load1, Load5: load.Load5, Load15: load.Load15, Totalmem: mem.Total, Freemem: mem.Free, Usedmem: mem.Used}
+	request := &pb.HeartbeatRequest{Id: 12345}
+	hostInfo, hostErr := host.Info()
+	if hostErr == nil {
+		(*request).Hostname = hostInfo.Hostname
+		(*request).Uptime = hostInfo.Uptime
+		(*request).Boottime = hostInfo.BootTime
+		(*request).Numprocs = hostInfo.Procs
+		(*request).Os = hostInfo.OS
+		(*request).Hostid = hostInfo.HostID
+	}
+	mem, memErr := mem.VirtualMemory()
+	if memErr == nil {
+		(*request).Totalmem = mem.Total
+		(*request).Freemem = mem.Free
+		(*request).Usedmem = mem.Used
+	}
+	load, loadErr := load.Avg()
+	if loadErr == nil {
+		(*request).Load1 = load.Load1
+		(*request).Load5 = load.Load5
+		(*request).Load15 = load.Load15
+	}
 	r, err := c.GetHeartBeat(ctx, request)
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		logger.Error("Error: %v", err)
+	} else {
+		logger.Infof("Response Message: %s", r.GetStatus())
 	}
-	log.Printf("Response Message: %s", r.GetStatus())
 
 }
 
-/*  BASE LAFORGE */
-// Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
-
-// Request Competition - by string name, string id
-/*func competition(c pb.LaforgeClient, name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	// COMP_NAME/ID are interchangeable due to "oneof" proto definition
-	comp_id := &pb.CompetitionRequest_Id{Id: "1234"}
-	r, err := c.GetCompetition(ctx, &pb.CompetitionRequest{Comp: comp_id})
-
-	//comp_name := &pb.CompetitionRequest_Name{Name: name}
-	//r, err := c.GetCompetition(ctx, &pb.CompetitionRequest{Comp: comp_name})
-
-	if err != nil {
-			log.Fatalf("could not greet: %v", err)
+func genSendHeartBeat(p *program, c pb.LaforgeClient) {
+	ticker := time.NewTicker(time.Duration(heartbeatSeconds) * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			SendHeartBeat(c)
+		case <-p.exit:
+			ticker.Stop()
+		}
 	}
-	//print server demo response
-	log.Printf("Competition Name: %v | ID: %v | Env: %v | Users: %v | Build Config: %v", r.GetName(), r.GetId(), r.GetEnvironments(), r.GetUsers(), r.GetBuildConfigs())
 }
 
-// Request Environment - by string name, string state, int32 id, int32 competition_id, int32 owner_id
-func environment(c pb.LaforgeClient, name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	// ENV_NAME/ID are interchangeable due to "oneof" proto definition
-	env_id := &pb.EnvironmentRequest_Id{Id: 1234}
-	r, err := c.GetEnvironment(ctx, &pb.EnvironmentRequest{Env: env_id})
-
-	//env_name := &pb.EnvironmentRequest_Name{Name: name}
-	//r, err := c.GetEnvironment(ctx, &pb.EnvironmentRequest{Env: env_name})
-
-	if err != nil {
-			log.Fatalf("could not greet: %v", err)
-	}
-	//print server demo response
-	log.Printf("Environment Name: %v | ID: %v | Comp ID: %v | Owner ID: %v | State: %s | Atts: %v | Networks: %v | Teams: %v", r.GetName(), r.GetId(), r.GetCompetitionId(), r.GetOwnerId(), r.GetState(), r.GetAttrs(), r.GetNetworks(), r.GetTeams())
-}
-*/
-
-func main() {
-	// Set up a connection to the server.
-	//secure connection
+func (p *program) run() error {
+	logger.Infof("I'm running %v.", service.Platform())
 	creds, credErr := credentials.NewClientTLSFromFile(certFile, "")
 	if credErr != nil {
-		log.Fatalf("Cred Error: %v", credErr)
+		logger.Errorf("Cred Error: %v", credErr)
 	}
 
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
 
-	//insecure connection
-	//conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		logger.Errorf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewLaforgeClient(conn)
 
 	// START VARS
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
+	genSendHeartBeat(p, c)
+	return nil
+}
+func (p *program) Stop(s service.Service) error {
+	// Any work in Stop should be quick, usually a few seconds at most.
+	logger.Info("I'm Stopping!")
+	close(p.exit)
+	return nil
+}
+
+// Service setup.
+//   Define service config.
+//   Create the service.
+//   Setup the logger.
+//   Handle service controls (optional).
+//   Run the service.
+func main() {
+	svcFlag := flag.String("service", "", "Control the system service.")
+	flag.Parse()
+
+	options := make(service.KeyValue)
+	options["Restart"] = "on-success"
+	options["SuccessExitStatus"] = "1 2 8 SIGKILL"
+	svcConfig := &service.Config{
+		Name:        "laforge-agent",
+		DisplayName: "Laforge Client Agent",
+		Description: "Laforge Client Agent",
+		Dependencies: []string{
+			"Requires=network.target",
+			"After=network-online.target"},
+		Option: options,
 	}
 
-	//comp_name := "Demo Comp"
-	//env_name := "Test Environment"
+	prg := &program{}
+	s, err := service.New(prg, svcConfig)
+	if err != nil {
+		logger.Error(err)
+	}
+	errs := make(chan error, 5)
+	logger, err = s.Logger(errs)
+	if err != nil {
+		logger.Error(err)
+	}
 
-	// END VARS
+	go func() {
+		for {
+			err := <-errs
+			if err != nil {
+				logger.Info(err)
+			}
+		}
+	}()
 
-	ping(c, name)
-	hostTest(c, name)
-	SendHeartBeat(c, name)
-	//competition(c, comp_name)
-	//environment(c, env_name)
-
+	if len(*svcFlag) != 0 {
+		err := service.Control(s, *svcFlag)
+		if err != nil {
+			logger.Infof("Valid actions: %q\n", service.ControlAction)
+			logger.Error(err)
+		}
+		return
+	}
+	err = s.Run()
+	if err != nil {
+		logger.Error(err)
+	}
 }
