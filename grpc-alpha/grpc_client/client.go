@@ -3,6 +3,13 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"os/exec"
+	"runtime"
+	"syscall"
 	"time"
 
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
@@ -18,7 +25,7 @@ const (
 	address          = "localhost:50051"
 	defaultName      = "Laforge Agent 1"
 	certFile         = "server.crt"
-	heartbeatSeconds = 5
+	heartbeatSeconds = 1
 )
 
 var (
@@ -39,9 +46,71 @@ func (p *program) Start(s service.Service) error {
 	return nil
 }
 
+// ExecuteCommand Runs the Command that is inputted and either returns the error or output
+func ExecuteCommand(command string) string {
+	output, err := exec.Command(command).Output()
+	if err != nil {
+		return err.Error()
+	}
+	return string(output)
+}
+
+// DeleteObject Deletes the Object that is inputted and either returns the error or nothing
+func DeleteObject(file string) error {
+	err := os.RemoveAll(file)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RebootSystem Reboots Host Operating System
+func RebootSystem() {
+	if runtime.GOOS == "windows" {
+		// This is how to properlly rebot windows
+		// user32 := syscall.MustLoadDLL("user32")
+		// defer user32.Release()
+
+		// exitwin := user32.MustFindProc("ExitWindowsEx")
+
+		// r1, _, err := exitwin.Call(0x02, 0)
+		// if r1 != 1 {
+		// 	fmt.Println("Failed to initiate shutdown:", err)
+		// }
+		if err := exec.Command("cmd", "/C", "shutdown", "/r").Run(); err != nil {
+			fmt.Println("Failed to initiate reboot:", err)
+		}
+	} else {
+		syscall.Sync()
+		syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+	}
+}
+
+// DownloadFile will download a url to a local file.
+func DownloadFile(filepath string, url string) error {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
+}
+
 // SendHeartBeat Example
 func SendHeartBeat(c pb.LaforgeClient) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	request := &pb.HeartbeatRequest{Id: 12345}
 	hostInfo, hostErr := host.Info()
@@ -67,7 +136,7 @@ func SendHeartBeat(c pb.LaforgeClient) {
 	}
 	r, err := c.GetHeartBeat(ctx, request)
 	if err != nil {
-		logger.Error("Error: %v", err)
+		logger.Errorf("Error: %v", err)
 	} else {
 		logger.Infof("Response Message: %s", r.GetStatus())
 	}
@@ -102,7 +171,10 @@ func (p *program) run() error {
 	c := pb.NewLaforgeClient(conn)
 
 	// START VARS
-	genSendHeartBeat(p, c)
+	go genSendHeartBeat(p, c)
+
+	// Need to do something better
+	time.Sleep(60 * time.Second)
 	return nil
 }
 func (p *program) Stop(s service.Service) error {
