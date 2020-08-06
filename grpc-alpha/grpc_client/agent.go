@@ -3,17 +3,15 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
-	"runtime"
-	"syscall"
 	"time"
 
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
 	"github.com/kardianos/service"
+	"github.com/mholt/archiver"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
@@ -47,8 +45,8 @@ func (p *program) Start(s service.Service) error {
 }
 
 // ExecuteCommand Runs the Command that is inputted and either returns the error or output
-func ExecuteCommand(command string) string {
-	output, err := exec.Command(command).Output()
+func ExecuteCommand(command string, args ...string) string {
+	output, err := exec.Command(command, args...).Output()
 	if err != nil {
 		return err.Error()
 	}
@@ -64,26 +62,30 @@ func DeleteObject(file string) error {
 	return nil
 }
 
-// RebootSystem Reboots Host Operating System
-func RebootSystem() {
-	if runtime.GOOS == "windows" {
-		// This is how to properlly rebot windows
-		// user32 := syscall.MustLoadDLL("user32")
-		// defer user32.Release()
+// Reboot Reboots Host Operating System
+func Reboot() {
+	RebootSystem()
+}
 
-		// exitwin := user32.MustFindProc("ExitWindowsEx")
+// ExtractArchive will extract archive to foler path.
+func ExtractArchive(filepath string, folderpath string) error {
+	err := archiver.Unarchive(filepath, folderpath)
+	return err
+}
 
-		// r1, _, err := exitwin.Call(0x02, 0)
-		// if r1 != 1 {
-		// 	fmt.Println("Failed to initiate shutdown:", err)
-		// }
-		if err := exec.Command("cmd", "/C", "shutdown", "/r").Run(); err != nil {
-			fmt.Println("Failed to initiate reboot:", err)
-		}
-	} else {
-		syscall.Sync()
-		syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
-	}
+// CreateUser will create a new user.
+func CreateUser(username string, password string) error {
+	return CreateSystemUser(username, password)
+}
+
+// ChangeUserPassword will change the users password
+func ChangeUserPassword(username string, password string) error {
+	return ChangeSystemUserPassword(username, password)
+}
+
+// AddUserGroup will extract archive to foler path.
+func AddUserGroup(groupname string, username string) error {
+	return AddSystemUserGroup(groupname, username)
 }
 
 // DownloadFile will download a url to a local file.
