@@ -1,3 +1,5 @@
+// +build windows
+
 package main
 
 import (
@@ -16,24 +18,24 @@ func RebootSystem() {
 
 	r1, _, err := exitwin.Call(0x02, 0)
 	if r1 != 1 {
-		logger.Errorf("Failed to initiate shutdown:", err)
+		ExecuteCommand("cmd", "/C", "shutdown", "/r")
 	}
 }
 
 // CreateSystemUser Creates User with specified password.
 func CreateSystemUser(username string, password string) error {
-	ok, err := wapi.UserAdd(username, username, password)
+	_, err := wapi.UserAdd(username, username, password)
 	return err
 }
 
 // ChangeSystemUserPassword Change user password.
 func ChangeSystemUserPassword(username string, password string) error {
-	ok, err := wapi.ChangePassword(username, password)
+	_, err := wapi.ChangePassword(username, password)
 	return err
 }
 
 // AddSystemUserGroup Add user to group.
 func AddSystemUserGroup(groupname string, username string) error {
-	ok, err := wapi.LocalGroupAddMembers(groupname, username)
+	_, err := wapi.LocalGroupAddMembers(groupname, []string{username})
 	return err
 }

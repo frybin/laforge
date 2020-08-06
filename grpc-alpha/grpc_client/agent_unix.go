@@ -1,3 +1,5 @@
+// +build unix linux
+
 package main
 
 import (
