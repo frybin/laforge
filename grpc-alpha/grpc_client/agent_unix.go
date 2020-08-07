@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os/exec"
 	os "os/user"
@@ -27,18 +28,27 @@ func CreateSystemUser(username string, password string) error {
 
 // ChangeSystemUserPassword Change user password.
 func ChangeSystemUserPassword(username string, password string) error {
-	cmd := exec.Command("passwd", username, "--stdin")
+	cmd := exec.Command("passwd", username)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return err
+		logger.Error(err)
 	}
-	go func() {
-		defer stdin.Close()
-		io.WriteString(stdin, password)
-	}()
+	defer stdin.Close()
 
-	errrun := cmd.Run()
-	return errrun
+	passnew := fmt.Sprintf("%s\n%s", password, password)
+
+	io.WriteString(stdin, passnew)
+	logger.Info(passnew)
+
+	if err = cmd.Start(); err != nil {
+		logger.Errorf("An error occured: ", err)
+	}
+
+	cmd.Wait()
+	out, _ := cmd.CombinedOutput()
+	logger.Errorf("combined out:\n%s\n", string(out))
+
+	return nil
 }
 
 // AddSystemUserGroup Change user password.
