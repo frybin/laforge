@@ -155,7 +155,7 @@ message PortReply {
 
 // Heartbeat info
 message HeartbeatRequest {
-  uint64 id = 1;
+  string client_id  = 1;
   string hostname = 2;
   uint64 uptime = 3;
   uint64 boottime = 4;
@@ -172,11 +172,12 @@ message HeartbeatRequest {
 
 message HeartbeatReply {
   string status = 1;
+  bool avalible_tasks = 2;
 }
 
 // Task info
 message TaskRequest {
-  int32 id = 1;
+  string client_id = 1;
 }
 
 message TaskReply {

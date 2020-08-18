@@ -7,6 +7,13 @@ services:
             context: .
         ports:
             - 50051:50051
-
+    postgres:
+        image: 'postgres:latest'
+        ports:
+            - 9920:5432 
+        environment:
+            - POSTGRES_DB=gorm
+            - POSTGRES_USER=gorm
+            - POSTGRES_PASSWORD=gorm
 volumes: 
     grpc:

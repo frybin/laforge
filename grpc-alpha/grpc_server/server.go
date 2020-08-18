@@ -9,12 +9,17 @@ import (
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"gorm.io/gorm"
 )
 
 const (
 	port     = ":50051"
 	certFile = "server.crt"
 	keyFile  = "server.key"
+)
+
+var (
+	db *gorm.DB
 )
 
 type server struct {
@@ -52,58 +57,32 @@ func ByteCountIEC(b uint64) string {
 
 //GetHeartBeat Info
 func (s *server) GetHeartBeat(ctx context.Context, in *pb.HeartbeatRequest) (*pb.HeartbeatReply, error) {
-	message := fmt.Sprintf("Recived ID: %v | Hostname: %v | Uptime: %v | Boot Time: %v| Number of Running Processes: %v| OS Arch: %v| Host ID: %v| Load1: %v| Load5: %v| Load15: %v| Total Memory: %v| Avalible Memory: %v| Used Memory: %v", in.GetId(), in.GetHostname(), in.GetUptime(), in.GetBoottime(), in.GetNumprocs(), in.GetOs(), in.GetHostid(), in.GetLoad1(), in.GetLoad5(), in.GetLoad15(), ByteCountIEC(in.GetTotalmem()), ByteCountIEC(in.GetFreemem()), ByteCountIEC(in.GetUsedmem()))
+	message := fmt.Sprintf("Recived ID: %v | Hostname: %v | Uptime: %v | Boot Time: %v| Number of Running Processes: %v| OS Arch: %v| Host ID: %v| Load1: %v| Load5: %v| Load15: %v| Total Memory: %v| Avalible Memory: %v| Used Memory: %v", in.GetClientId(), in.GetHostname(), in.GetUptime(), in.GetBoottime(), in.GetNumprocs(), in.GetOs(), in.GetHostid(), in.GetLoad1(), in.GetLoad5(), in.GetLoad15(), ByteCountIEC(in.GetTotalmem()), ByteCountIEC(in.GetFreemem()), ByteCountIEC(in.GetUsedmem()))
 	log.Printf(message)
-	return &pb.HeartbeatReply{Status: message}, nil
+	avalibleTasks := false
+	tasks := make([]Task, 0)
+	db.Find(&tasks, map[string]interface{}{"client_id": in.GetClientId(), "completed": false})
+	if len(tasks) > 0 {
+		avalibleTasks = true
+	}
+	return &pb.HeartbeatReply{Status: message, AvalibleTasks: avalibleTasks}, nil
 }
 
 //GetTask Info
 func (s *server) GetTask(ctx context.Context, in *pb.TaskRequest) (*pb.TaskReply, error) {
-	return &pb.TaskReply{Id: 1, Command: pb.TaskReply_EXECUTE, Args: "echo Hello"}, nil
-}
-
-/*  BASE LAFORGE */
-// Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
-
-//Competition Info
-/*func (s *server) GetCompetition(ctx context.Context, in *pb.CompetitionRequest) (*pb.CompetitionReply, error) {
-	// set defaults if name or id is omitted due to oneof from client request
-	name := "N/A"
-	id := "000000"
-
-	switch {
-	case in.GetName() != "":
-		name = in.GetName()
-	case in.GetId() != "":
-		id = in.GetId()
+	clientID := in.ClientId
+	tasks := make([]Task, 0)
+	db.Order("task_id asc").Find(&tasks, map[string]interface{}{"client_id": clientID, "completed": false})
+	if len(tasks) > 0 {
+		task := tasks[0]
+		//TEMP Delete Once Completed Route Implemented
+		task.Completed = true
+		db.Save(&task)
+		//
+		return &pb.TaskReply{Id: task.TaskID, Command: pb.TaskReply_Command(task.CommandID), Args: task.Args}, nil
 	}
-
-	log.Printf("Client Send - Competition Name: %v | ID: %v", in.GetName(), in.GetId())
-	log.Printf("Server Change - Competition Name: %v | ID: %v", name, id)
-
-	//demo response
-	comp := pb.CompetitionReply{Name: name, Id: id, Environments: []int32{1, 2, 3}, Users: []int32{11, 22, 33}, BuildConfigs: []int32{111, 222, 333}}
-	return &comp, nil
+	return &pb.TaskReply{Id: 0, Command: pb.TaskReply_DEFAULT}, nil
 }
-
-// Environment Info
-func (s *server) GetEnvironment(ctx context.Context, in *pb.EnvironmentRequest) (*pb.EnvironmentReply, error) {
-	// set defaults if name or id is omitted due to oneof from client request
-	name := "N/A"
-	id := in.GetId()
-
-	switch {
-	case in.GetName() != "":
-		name = in.GetName()
-	}
-
-	log.Printf("Client Send - Environment Name: %v | ID: %v", in.GetName(), in.GetId())
-
-	//demo response
-	env := pb.EnvironmentReply{Id: id, CompetitionId: 123456, OwnerId: 1111, Name: name, State: "Not Running", Attrs: []string{"local", "internal only"}, Networks: []int32{1, 2, 3}, Teams: []int32{11, 22, 33}}
-	return &env, nil
-}
-*/
 
 func main() {
 	lis, err := net.Listen("tcp", port)
@@ -120,6 +99,7 @@ func main() {
 
 	fmt.Println("Starting Laforge Server on port " + port)
 
+	db = OpenDB()
 	pb.RegisterLaforgeServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

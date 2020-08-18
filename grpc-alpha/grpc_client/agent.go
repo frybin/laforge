@@ -25,6 +25,7 @@ const (
 	defaultName      = "Laforge Agent 1"
 	certFile         = "server.crt"
 	heartbeatSeconds = 1
+	clientID         = "1"
 )
 
 var (
@@ -115,7 +116,7 @@ func DownloadFile(filepath string, url string) error {
 func RequestTask(c pb.LaforgeClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	request := &pb.TaskRequest{Id: 12345}
+	request := &pb.TaskRequest{ClientId: clientID}
 	r, err := c.GetTask(ctx, request)
 	if err != nil {
 		logger.Errorf("Error: %v", err)
@@ -184,7 +185,7 @@ func RequestTask(c pb.LaforgeClient) {
 func SendHeartBeat(c pb.LaforgeClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	request := &pb.HeartbeatRequest{Id: 12345}
+	request := &pb.HeartbeatRequest{ClientId: clientID}
 	hostInfo, hostErr := host.Info()
 	if hostErr == nil {
 		(*request).Hostname = hostInfo.Hostname
@@ -211,6 +212,10 @@ func SendHeartBeat(c pb.LaforgeClient) {
 		logger.Errorf("Error: %v", err)
 	} else {
 		logger.Infof("Response Message: %s", r.GetStatus())
+		logger.Infof("Avalible Tasks: %s", r.GetAvalibleTasks())
+		if r.GetAvalibleTasks() {
+			go RequestTask(c)
+		}
 	}
 
 }
@@ -242,8 +247,6 @@ func (p *program) run() error {
 	}
 	defer conn.Close()
 	c := pb.NewLaforgeClient(conn)
-
-	RequestTask(c)
 
 	// START VARS
 	go genSendHeartBeat(p, c)
