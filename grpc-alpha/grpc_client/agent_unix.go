@@ -35,18 +35,15 @@ func ChangeSystemUserPassword(username string, password string) error {
 	}
 	defer stdin.Close()
 
-	passnew := fmt.Sprintf("%s\n%s", password, password)
+	passnew := fmt.Sprintf("%s\n%s\n", password, password)
 
 	io.WriteString(stdin, passnew)
-	logger.Info(passnew)
 
 	if err = cmd.Start(); err != nil {
 		logger.Errorf("An error occured: ", err)
 	}
 
 	cmd.Wait()
-	out, _ := cmd.CombinedOutput()
-	logger.Errorf("combined out:\n%s\n", string(out))
 
 	return nil
 }

@@ -57,6 +57,11 @@ func (s *server) GetHeartBeat(ctx context.Context, in *pb.HeartbeatRequest) (*pb
 	return &pb.HeartbeatReply{Status: message}, nil
 }
 
+//GetTask Info
+func (s *server) GetTask(ctx context.Context, in *pb.TaskRequest) (*pb.TaskReply, error) {
+	return &pb.TaskReply{Id: 1, Command: pb.TaskReply_EXECUTE, Args: "echo Hello"}, nil
+}
+
 /*  BASE LAFORGE */
 // Fields Source: https://app.swaggerhub.com/apis/LaForge/LaforgeAPI/0.0.1-oas3#
 
@@ -106,12 +111,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//secure server
+	// secure server
 	creds, _ := credentials.NewServerTLSFromFile(certFile, keyFile)
 	s := grpc.NewServer(grpc.Creds(creds))
 
 	//insecure server
-	//s := grpc.NewServer()
+	// s := grpc.NewServer()
 
 	fmt.Println("Starting Laforge Server on port " + port)
 

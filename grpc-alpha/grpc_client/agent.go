@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
@@ -110,6 +111,75 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
+// RequestTask Hi
+func RequestTask(c pb.LaforgeClient) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	request := &pb.TaskRequest{Id: 12345}
+	r, err := c.GetTask(ctx, request)
+	if err != nil {
+		logger.Errorf("Error: %v", err)
+	} else {
+		switch r.Command {
+		case pb.TaskReply_EXECUTE:
+			taskArgs := strings.Split(r.Args, " ")
+			command := taskArgs[0]
+			args := taskArgs[1:]
+			output := ExecuteCommand(command, args...)
+			logger.Infof("Command Output: %s", output)
+		case pb.TaskReply_DOWNLOAD:
+			taskArgs := strings.Split(r.Args, ",")
+			filepath := taskArgs[0]
+			url := taskArgs[1]
+			taskerr := DownloadFile(filepath, url)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		case pb.TaskReply_EXTRACT:
+			taskArgs := strings.Split(r.Args, ",")
+			filepath := taskArgs[0]
+			folder := taskArgs[1]
+			taskerr := ExtractArchive(filepath, folder)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		case pb.TaskReply_DELETE:
+			taskerr := DeleteObject(r.Args)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		case pb.TaskReply_REBOOT:
+			Reboot()
+		case pb.TaskReply_CREATEUSER:
+			taskArgs := strings.Split(r.Args, ",")
+			username := taskArgs[0]
+			password := taskArgs[1]
+			taskerr := CreateUser(username, password)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		case pb.TaskReply_ADDTOGROUP:
+			taskArgs := strings.Split(r.Args, ",")
+			group := taskArgs[0]
+			username := taskArgs[1]
+			taskerr := AddUserGroup(group, username)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		case pb.TaskReply_CREATEUSERPASS:
+			taskArgs := strings.Split(r.Args, ",")
+			username := taskArgs[0]
+			password := taskArgs[1]
+			taskerr := ChangeUserPassword(username, password)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
+		default:
+			logger.Infof("Response Message: %v", r)
+		}
+	}
+}
+
 // SendHeartBeat Example
 func SendHeartBeat(c pb.LaforgeClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -165,12 +235,15 @@ func (p *program) run() error {
 	}
 
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
+	// conn, err := grpc.Dial(address, grpc.WithInsecure())
 
 	if err != nil {
 		logger.Errorf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewLaforgeClient(conn)
+
+	RequestTask(c)
 
 	// START VARS
 	go genSendHeartBeat(p, c)

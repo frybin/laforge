@@ -27,6 +27,7 @@ service laforge {
   rpc SetAdminPassword(PasswordRequest) returns (PasswordReply) {}
   rpc ValidateProcess(ProcessRequest) returns (ProcessReply) {}
   rpc GetHeartBeat(HeartbeatRequest) returns (HeartbeatReply) {}
+  rpc GetTask(TaskRequest) returns (TaskReply) {}
 }
 
 // ping info
@@ -171,4 +172,27 @@ message HeartbeatRequest {
 
 message HeartbeatReply {
   string status = 1;
+}
+
+// Task info
+message TaskRequest {
+  int32 id = 1;
+}
+
+message TaskReply {
+  int32 id = 1;
+  enum Command {
+    DEFAULT = 0;
+    DELETE = 1;
+    REBOOT = 2;
+    EXTRACT = 3;
+    DOWNLOAD = 4;
+    CREATEUSER = 5;
+    CREATEUSERPASS = 6;
+    ADDTOGROUP = 7;
+    EXECUTE = 8;
+  }
+  Command command = 2;
+  string args = 3;
+
 }
