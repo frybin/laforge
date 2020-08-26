@@ -7,6 +7,7 @@ import (
 	"net"
 
 	pb "github.com/frybin/laforge/grpc-alpha/laforge_proto_agent"
+	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"gorm.io/gorm"
@@ -16,6 +17,7 @@ const (
 	port     = ":50051"
 	certFile = "server.crt"
 	keyFile  = "server.key"
+	webPort  = ":5000"
 )
 
 var (
@@ -90,6 +92,21 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	db = OpenDB()
+
+	log.Printf("Starting API Server on port " + webPort)
+	web := gin.Default()
+	web.GET("/download/:file_id", TempURLHandler)
+
+	apiGroup := web.Group("/api")
+	{
+		add := apiGroup.Group("add")
+		add.POST("task", TaskAdder)
+		add.POST("file", FileAdder)
+	}
+
+	go web.Run(webPort)
+
 	// secure server
 	creds, _ := credentials.NewServerTLSFromFile(certFile, keyFile)
 	s := grpc.NewServer(grpc.Creds(creds))
@@ -97,9 +114,8 @@ func main() {
 	//insecure server
 	// s := grpc.NewServer()
 
-	fmt.Println("Starting Laforge Server on port " + port)
+	log.Printf("Starting Laforge Server on port " + port)
 
-	db = OpenDB()
 	pb.RegisterLaforgeServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

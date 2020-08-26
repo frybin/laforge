@@ -13,19 +13,18 @@ const (
 
 // Task to be assigned
 type Task struct {
-	ClientID  string `gorm:"primary_key"`
-	TaskID    int32  `gorm:"primary_key;auto_increment:false"`
-	CommandID int32
-	Args      string
-	Completed bool `gorm:"default:false"`
+	ClientID  string `gorm:"primary_key" json:"client_id"`
+	TaskID    int32  `gorm:"primary_key;auto_increment:false" json:"task_id"`
+	CommandID int32  `json:"command_id"`
+	Args      string `json:"command_args"`
+	Completed bool   `gorm:"default:false"`
 }
 
 // TempURL to be assigned
 type TempURL struct {
-	URLPost  string `gorm:"unique;not null"`
-	FilePath string `gorm:"not null"`
+	URLPost  string `gorm:"primary_key"`
+	FilePath string `gorm:"not null" json:"file_path"`
 	Valid    bool   `gorm:"default:true"`
-	gorm.Model
 }
 
 // OpenDB function used to connect to dataase and returns db object
@@ -35,6 +34,7 @@ func OpenDB() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	CreateDB(db)
 	return db
 }
 
@@ -46,7 +46,6 @@ func CreateDB(db *gorm.DB) {
 func test() {
 
 	db := OpenDB()
-	CreateDB(db)
 	db.Create(&Task{ClientID: "Test", TaskID: 2, CommandID: 8, Args: "Bob", Completed: true})
 	tasks := make([]Task, 0)
 	db.Find(&tasks)
