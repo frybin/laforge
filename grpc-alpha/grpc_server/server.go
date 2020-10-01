@@ -77,13 +77,21 @@ func (s *server) GetTask(ctx context.Context, in *pb.TaskRequest) (*pb.TaskReply
 	db.Order("task_id asc").Find(&tasks, map[string]interface{}{"client_id": clientID, "completed": false})
 	if len(tasks) > 0 {
 		task := tasks[0]
-		//TEMP Delete Once Completed Route Implemented
-		task.Completed = true
-		db.Save(&task)
-		//
 		return &pb.TaskReply{Id: task.TaskID, Command: pb.TaskReply_Command(task.CommandID), Args: task.Args}, nil
 	}
 	return &pb.TaskReply{Id: 0, Command: pb.TaskReply_DEFAULT}, nil
+}
+
+// InformTaskStatus
+func (s *server) InformTaskStatus(ctx context.Context, in *pb.HeartbeatReply) (*pb.HeartbeatReply, error) {
+	clientID := in.ClientId
+	tasks := make([]Task, 0)
+	db.Order("task_id asc").Find(&tasks, map[string]interface{}{"client_id": clientID, "completed": false})
+	task := tasks[0]
+	task.Completed = true
+	db.Save(&task)
+
+	return nil, nil
 }
 
 func main() {

@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"flag"
 	"io"
 	"net/http"
@@ -112,6 +114,40 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
+func ValidateMD5Hash(filepath string, md5hash string) (bool, error) {
+	var calculatedMD5Hash string
+
+	// Open the file 
+	file, err := os.Open(filepath)
+
+	// Can't open the file, assuming false
+	if err != nil {
+		return false, err
+	}
+
+	// Close the file when we're done
+	defer file.Close()
+
+	// Open a new hash interface
+	hash := md5.New()
+
+	// Hash the file
+	if _, err := io.Copy(hash, file); err != nil {
+		return false, err
+	}
+
+	byteHash := hash.Sum(nil)[:16]
+
+	// Convert bytes to string
+	calculatedMD5Hash = hex.EncodeToString(byteHash)
+
+	if calculatedMD5Hash == md5hash {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 // RequestTask Hi
 func RequestTask(c pb.LaforgeClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -175,6 +211,14 @@ func RequestTask(c pb.LaforgeClient) {
 			if taskerr != nil {
 				logger.Errorf("Error: %v", taskerr)
 			}
+		case pb.TaskReply_VALIDATE:
+			taskArgs := strings.Split(r.Args, ",")
+			filepath := taskArgs[0]
+			md5hash := taskArgs[1]
+			taskeer := ValidateMD5Hash(filepath, md5hash)
+			if taskerr != nil {
+				logger.Errorf("Error: %v", taskerr)
+			}
 		default:
 			logger.Infof("Response Message: %v", r)
 		}
@@ -182,7 +226,7 @@ func RequestTask(c pb.LaforgeClient) {
 }
 
 // SendHeartBeat Example
-func SendHeartBeat(c pb.LaforgeClient) {
+func SendHeartBeat(c pb.LaforgeClient, taskChannel Channel) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	request := &pb.HeartbeatRequest{ClientId: clientID}
@@ -208,24 +252,43 @@ func SendHeartBeat(c pb.LaforgeClient) {
 		(*request).Load15 = load.Load15
 	}
 	r, err := c.GetHeartBeat(ctx, request)
+	taskChannel <- r
+
 	if err != nil {
 		logger.Errorf("Error: %v", err)
-	} else {
-		logger.Infof("Response Message: %s", r.GetStatus())
-		logger.Infof("Avalible Tasks: %s", r.GetAvalibleTasks())
-		if r.GetAvalibleTasks() {
-			go RequestTask(c)
-		}
 	}
-
 }
 
-func genSendHeartBeat(p *program, c pb.LaforgeClient) {
+func StartTaskRunner(c pb.LaforgeClient, taskChannel Channel) {
+    if r := <- taskChannel {
+		logger.Infof("Response Message: %s", r.GetStatus())
+		logger.Infof("Avalible Tasks: %s", r.GetAvalibleTasks())
+
+		if r.GetAvalibleTasks() {
+			RequestTask(c)
+		}
+	}
+}
+
+func genSendHeartBeat(p *program, c pb.LaforgeClient, taskChannel Channel) {
 	ticker := time.NewTicker(time.Duration(heartbeatSeconds) * time.Second)
 	for {
 		select {
 		case <-ticker.C:
-			SendHeartBeat(c)
+			SendHeartBeat(c, taskChannel)
+		case <-p.exit:
+			ticker.Stop()
+		}
+	}
+}
+
+func genStartTaskRunner(p *program, c pb.LaforgeClinet, taskChannel Channel) {
+	ticker := time.NewTicker(time.Duration(heartbeatSeconds) * time.Second)
+
+	for {
+		select {
+		case <-ticker.C:
+			StartTaskRunner(c, taskChannel)
 		case <-p.exit:
 			ticker.Stop()
 		}
@@ -249,7 +312,9 @@ func (p *program) run() error {
 	c := pb.NewLaforgeClient(conn)
 
 	// START VARS
-	go genSendHeartBeat(p, c)
+	taskChannel := make(chan bool)
+	go genSendHeartBeat(p, c, taskChannel)
+	go genStartTaskRunner(p, c, taskChannel)
 
 	// Need to do something better
 	time.Sleep(60 * time.Second)

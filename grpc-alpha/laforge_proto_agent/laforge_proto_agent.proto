@@ -10,147 +10,9 @@ option java_package = "io.laforge.proto.agent";
 option java_outer_classname = "laforge_Proto_agent";
 
 service laforge {
-  rpc GetPing(PingRequest) returns (PingReply) {}
-  rpc GetHostTest(HostTestRequest) returns (HostTestReply) {}
-  rpc GetPort(PortRequest) returns (PortReply) {}
-  rpc DownloadFile(FileRequest) returns (FileReply) {}
-  rpc ExecuteFile(FileDefinition) returns (FileDefinitionReply) {}
-  rpc ExtractFile(FileDefinition) returns (FileDefinitionReply) {}
-  rpc DeleteFile(FileDefinition) returns (FileDefinitionReply) {}
-  rpc ValidateFile(FileDefinition) returns (FileDefinitionReply) {}
-  rpc ValidateFileHash(FileDefinition) returns (FileDefinitionReply) {}
-  rpc DeleteDir(DirectoryDefinition) returns (DirectoryReply) {}
-  rpc ValidateDir(DirectoryDefinition) returns (DirectoryReply) {}
-  rpc RunCommand(CommandRequest) returns (CommandReply) {}
-  rpc RequestReboot(Reboot) returns (google.protobuf.Empty) {}
-  rpc ReportReboot(RebootReportRequest) returns (RebootReportReply) {}
-  rpc SetAdminPassword(PasswordRequest) returns (PasswordReply) {}
-  rpc ValidateProcess(ProcessRequest) returns (ProcessReply) {}
   rpc GetHeartBeat(HeartbeatRequest) returns (HeartbeatReply) {}
   rpc GetTask(TaskRequest) returns (TaskReply) {}
-}
-
-// ping info
-message PingRequest {
-  string name = 1;
-  int32 id = 2;
-}
-
-message PingReply {
-  string name = 1;
-  int32 id = 2;
-}
-
-// host info
-message HostTestRequest {
-  string name = 1;
-  int32 id = 2; // Unique ID number for this Host.
-  string ip = 3;
-  string os = 4;
-}
-
-message HostTestReply {
-  string name = 1;
-  int32 id = 2;
-  string ip = 3;
-  string os = 4;
-}
-
-// Files
-
-message FileRequest {
-  oneof file {
-    int32 id = 1;
-    string name = 2;
-  }
-}
-
-message FileReply {
-  int32 id = 1;
-  string name = 2;
-  string path = 3;
-  string type = 4;
-  string md5 = 5;
-  string last_updated = 6;
-}
-
-// Commands
-
-message CommandRequest { string command = 1; }
-
-message CommandReply {
-  string command = 1;
-  string status = 2;
-}
-
-message FileDefinition {
-  oneof file {
-    int32 id = 1;
-    string name = 2;
-    string path = 3;
-  }
-  string md5 = 4;
-}
-
-message FileDefinitionReply {
-  int32 id = 1;
-  string name = 2;
-  string path = 3;
-  string type = 4;
-  string md5 = 5;
-  string status = 6;
-}
-
-message DirectoryDefinition { string path = 1; }
-
-message DirectoryReply {
-  string path = 1;
-  string status = 2;
-}
-
-message Reboot { google.protobuf.Timestamp timestamp = 1; }
-
-message RebootReportRequest {
-  string name = 1;
-  int32 id = 2; // Unique ID number for this Host.
-  string ip = 3;
-  string os = 4;
-  google.protobuf.Timestamp timestamp = 5;
-}
-
-message RebootReportReply {
-  int32 id = 1;
-  string status = 2;
-}
-
-message PasswordRequest {
-  string password = 1; // Will need to be either a Hash or Encrypted.
-}
-
-message PasswordReply { string status = 1; }
-
-message ProcessRequest {
-  oneof process {
-    int32 id = 1;
-    string name = 2;
-  }
-}
-
-message ProcessReply {
-  int32 id = 1;
-  string name = 2;
-  string status = 3;
-}
-
-message PortRequest {
-  string port = 1;
-  string protocol = 2;
-}
-
-message PortReply {
-  string port = 1;
-  string protocol = 2;
-  string status = 3;
+  //rpc InformTaskStatus(HeartbeatReply) returns {HeartbeatReply} {}
 }
 
 // Heartbeat info
@@ -192,6 +54,7 @@ message TaskReply {
     CREATEUSERPASS = 6;
     ADDTOGROUP = 7;
     EXECUTE = 8;
+    VALIDATE = 9;
   }
   Command command = 2;
   string args = 3;
