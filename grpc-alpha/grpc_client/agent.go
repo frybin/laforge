@@ -28,6 +28,10 @@ const (
 	certFile         = "server.crt"
 	heartbeatSeconds = 1
 	clientID         = "1"
+
+	TaskFailed = "Failed"
+	TaskRunning = "Running"
+	TaskSucceeded = "Completed"
 )
 
 var (
@@ -114,7 +118,7 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
-func ValidateMD5Hash(filepath string, md5hash string) (bool, error) {
+func ValidateMD5Hash(filepath string, md5hash string) error {
 	var calculatedMD5Hash string
 
 	// Open the file 
@@ -133,7 +137,7 @@ func ValidateMD5Hash(filepath string, md5hash string) (bool, error) {
 
 	// Hash the file
 	if _, err := io.Copy(hash, file); err != nil {
-		return false, err
+		return err
 	}
 
 	byteHash := hash.Sum(nil)[:16]
@@ -142,9 +146,9 @@ func ValidateMD5Hash(filepath string, md5hash string) (bool, error) {
 	calculatedMD5Hash = hex.EncodeToString(byteHash)
 
 	if calculatedMD5Hash == md5hash {
-		return true, nil
+		return errors.New("MD5 hashes do not match")
 	} else {
-		return false, nil
+		return nil
 	}
 }
 
@@ -154,6 +158,10 @@ func RequestTask(c pb.LaforgeClient) {
 	defer cancel()
 	request := &pb.TaskRequest{ClientId: clientID}
 	r, err := c.GetTask(ctx, request)
+
+	taskRequest := &pb.TaskStatusRequest{ClientId: clientID, Status: TaskRunning}
+	c.InformTaskStatus(ctx, taskRequest)
+
 	if err != nil {
 		logger.Errorf("Error: %v", err)
 	} else {
@@ -164,64 +172,65 @@ func RequestTask(c pb.LaforgeClient) {
 			args := taskArgs[1:]
 			output := ExecuteCommand(command, args...)
 			logger.Infof("Command Output: %s", output)
+			RequestTaskStatusRequest(nil, clientID, c)
 		case pb.TaskReply_DOWNLOAD:
 			taskArgs := strings.Split(r.Args, ",")
 			filepath := taskArgs[0]
 			url := taskArgs[1]
 			taskerr := DownloadFile(filepath, url)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_EXTRACT:
 			taskArgs := strings.Split(r.Args, ",")
 			filepath := taskArgs[0]
 			folder := taskArgs[1]
 			taskerr := ExtractArchive(filepath, folder)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_DELETE:
 			taskerr := DeleteObject(r.Args)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_REBOOT:
 			Reboot()
+			taskRequest := &pb.TaskStatusRequest{ClientId: clientID, Status: TaskSucceeded}
+			c.InformTaskStatus(ctx, taskRequest)
 		case pb.TaskReply_CREATEUSER:
 			taskArgs := strings.Split(r.Args, ",")
 			username := taskArgs[0]
 			password := taskArgs[1]
 			taskerr := CreateUser(username, password)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_ADDTOGROUP:
 			taskArgs := strings.Split(r.Args, ",")
 			group := taskArgs[0]
 			username := taskArgs[1]
 			taskerr := AddUserGroup(group, username)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_CREATEUSERPASS:
 			taskArgs := strings.Split(r.Args, ",")
 			username := taskArgs[0]
 			password := taskArgs[1]
 			taskerr := ChangeUserPassword(username, password)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		case pb.TaskReply_VALIDATE:
 			taskArgs := strings.Split(r.Args, ",")
 			filepath := taskArgs[0]
 			md5hash := taskArgs[1]
 			taskeer := ValidateMD5Hash(filepath, md5hash)
-			if taskerr != nil {
-				logger.Errorf("Error: %v", taskerr)
-			}
+			RequestTaskStatusRequest(taskerr, clientID, c)
 		default:
 			logger.Infof("Response Message: %v", r)
+		    RequestTaskStatusRequest(nil, clientID, c)
 		}
+	}
+}
+
+func RequestTaskStatusRequest(taskerr error, clientID string, c pb.LaforgeClient) {
+	if taskerr != nil {
+		logger.Errorf("Error: %v", taskerr)
+		taskRequest := &pb.TaskStatusRequest{ClientId: clientID, Status: TaskFailed}
+		c.InformTaskStatus(ctx, taskRequest)
+	} else {
+		taskRequest := &pb.TaskStatusRequest{ClientId: clientID, Status: TaskSucceeded}
+		c.InformTaskStatus(ctx, taskRequest)
 	}
 }
 

@@ -11,6 +11,10 @@ const (
 	dbDSN = "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable"
 )
 
+enum TaskStatus {
+
+}
+
 // Task to be assigned
 type Task struct {
 	ClientID  string `gorm:"primary_key" json:"client_id"`
@@ -18,6 +22,7 @@ type Task struct {
 	CommandID int32  `json:"command_id"`
 	Args      string `json:"command_args"`
 	Completed bool   `gorm:"default:false"`
+	Status    string `gorm:"default:Not Run"`  
 }
 
 // TempURL to be assigned

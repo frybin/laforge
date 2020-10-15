@@ -18,6 +18,10 @@ const (
 	certFile = "server.crt"
 	keyFile  = "server.key"
 	webPort  = ":5000"
+
+	TaskFailed = "Failed"
+	TaskRunning = "Running"
+	TaskSucceeded = "Completed"
 )
 
 var (
@@ -75,6 +79,8 @@ func (s *server) GetTask(ctx context.Context, in *pb.TaskRequest) (*pb.TaskReply
 	clientID := in.ClientId
 	tasks := make([]Task, 0)
 	db.Order("task_id asc").Find(&tasks, map[string]interface{}{"client_id": clientID, "completed": false})
+	task := tasks[0]
+
 	if len(tasks) > 0 {
 		task := tasks[0]
 		return &pb.TaskReply{Id: task.TaskID, Command: pb.TaskReply_Command(task.CommandID), Args: task.Args}, nil
@@ -83,15 +89,24 @@ func (s *server) GetTask(ctx context.Context, in *pb.TaskRequest) (*pb.TaskReply
 }
 
 // InformTaskStatus
-func (s *server) InformTaskStatus(ctx context.Context, in *pb.HeartbeatReply) (*pb.HeartbeatReply, error) {
+func (s *server) InformTaskStatus(ctx context.Context, in *pb.TaskStatusRequest) (*pb.TaskStatusReply, error) {
 	clientID := in.ClientId
 	tasks := make([]Task, 0)
 	db.Order("task_id asc").Find(&tasks, map[string]interface{}{"client_id": clientID, "completed": false})
 	task := tasks[0]
-	task.Completed = true
-	db.Save(&task)
 
-	return nil, nil
+	switch status := in.status; status {
+		case TaskRunning:
+			task.Status = TaskRunning
+		case TaskFailed:
+			task.Status = TaskFailed
+		case TaskSucceeded:
+			task.Status = TaskSucceeded
+			task.Completed = true
+	}
+
+	db.Save(&task)
+	return &pb.TaskStatusReply{Status: task.Status}, nil
 }
 
 func main() {

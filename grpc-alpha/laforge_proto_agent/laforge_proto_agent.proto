@@ -12,7 +12,7 @@ option java_outer_classname = "laforge_Proto_agent";
 service laforge {
   rpc GetHeartBeat(HeartbeatRequest) returns (HeartbeatReply) {}
   rpc GetTask(TaskRequest) returns (TaskReply) {}
-  //rpc InformTaskStatus(HeartbeatReply) returns {HeartbeatReply} {}
+  rpc InformTaskStatus(TaskStatusRequest) returns (TaskStatusReply) {}
 }
 
 // Heartbeat info
@@ -58,5 +58,13 @@ message TaskReply {
   }
   Command command = 2;
   string args = 3;
+}
 
+message TaskStatusRequest {
+    string client_id = 1;
+    string status = 2;
+}
+
+message TaskStatusReply {
+    string status = 1;
 }
