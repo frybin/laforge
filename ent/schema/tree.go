@@ -22,6 +22,6 @@ func (Tree) Fields() []ent.Field {
 func (Tree) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("target", Tree.Type),
-		edge.From("source", Tree.Type),
+		edge.From("source", Tree.Type).Ref("target"),
 	}
 }

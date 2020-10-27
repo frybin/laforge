@@ -470,3 +470,95 @@ func DependencyCost(d Dependency) int64 {
 func (s *Snapshot) Relate(root Dependency, leafs ...Dependency) error {
 	return nil
 }
+
+
+//
+//
+//
+//
+//
+//
+//
+
+
+// GetEdges returns a type asserted set of edges
+func (s *Snapshot) GetEdges() mapset.Set {
+}
+
+// DependencyList is a helper type alias to handle topological sorting of laforge state elements
+type DependencyList []int
+
+// RelateFunc is a type alias to a function that relates objects together in a promise style format
+type RelateFunc func() error
+
+// Hash implements the hasher interface
+func (s *Snapshot) Hash() uint64 {
+}
+
+// NewEmptySnapshot returns an empty snapshot object
+func NewEmptySnapshot() *Snapshot {
+}
+
+// NewSnapshotFromEnv creates a new snapshot from a provided environment
+func NewSnapshotFromEnv(e *Environment, overwriteBuild bool) (*Snapshot, error) {
+}
+
+// AddNodeV2 places items on the graph
+func (s *Snapshot) AddNodeV2(id string) {
+}
+
+// RelateV2 is what actually snips and splices edges into the graph
+func (s *Snapshot) RelateV2(e Edge) {
+}
+
+// RelateObjects monitors the edgebus channel for objects that need edges defined in the graph
+func (s *Snapshot) RelateObjects(end chan struct{}, fin chan struct{}) {
+}
+
+// StoreMetadata creates entries in the snapshot's Metastore
+func (s *Snapshot) StoreMetadata(end chan struct{}, fin chan struct{}) {
+}
+
+// PopulateGraph places items on the graph with a default root value
+func (s *Snapshot) PopulateGraph(end chan struct{}, fin chan struct{}) {
+}
+
+// AddObject adds a dependency to the Metastore
+func (s *Snapshot) AddObject(dep Dependency) {
+}
+
+// CreateEdge returns an edge creation data structure
+func CreateEdge(src Dependency, target Dependency) Edge {
+}
+
+// AddRelationship places a relationship on the Edgebus
+func (s *Snapshot) AddRelationship(src Dependency, target Dependency) {
+}
+
+// WalkEnvironment walks the environment looking for dependencies to graph
+func (s *Snapshot) WalkEnvironment(e *Environment, wg *sync.WaitGroup) {
+}
+
+// WalkHost is used to identify global host dependencies
+func (s *Snapshot) WalkHost(h *Host, wg *sync.WaitGroup) {
+}
+
+// WalkTeam is used to enumerate the resources of a team
+func (s *Snapshot) WalkTeam(t *Team, wg *sync.WaitGroup) {
+}
+
+// WalkProvisionedHost is used to walk all the elements of a provisioned host
+func (s *Snapshot) WalkProvisionedHost(ph *ProvisionedHost, wg *sync.WaitGroup) {
+}
+
+// RebuildGraph will attempt to recreate the dependency tree based on it's persisted metadata instead of building from environment.
+func (s *Snapshot) RebuildGraph() error {
+}
+
+// DependencyType is used to return a string representation of the ObjectType of a dependency
+func DependencyType(d Dependency) string {
+}
+
+// DependencyCost returns a pre-specified cost for paths within the graph traversal
+func DependencyCost(d Dependency) int64 {
+}
