@@ -8,6 +8,15 @@ import (
 	"strconv"
 )
 
+type Build struct {
+	ID         string       `json:"id"`
+	Revision   int          `json:"revision"`
+	Tags       []*Tag       `json:"tags"`
+	Config     []*ConfigMap `json:"config"`
+	Maintainer *User        `json:"maintainer"`
+	Teams      []*Team      `json:"teams"`
+}
+
 type Command struct {
 	ID           string     `json:"id"`
 	Name         string     `json:"name"`
@@ -23,6 +32,22 @@ type Command struct {
 	Maintainer   *User      `json:"maintainer"`
 }
 
+type Competition struct {
+	ID           string       `json:"id"`
+	RootPassword string       `json:"rootPassword"`
+	Config       []*ConfigMap `json:"config"`
+	DNS          *DNS         `json:"dns"`
+}
+
+type DNS struct {
+	ID         string       `json:"id"`
+	Type       string       `json:"type"`
+	RootDomain string       `json:"rootDomain"`
+	DNSServers []*string    `json:"DNSServers"`
+	NTPServer  []*string    `json:"NTPServer"`
+	Config     []*ConfigMap `json:"config"`
+}
+
 type DNSRecord struct {
 	ID       string     `json:"id"`
 	Name     string     `json:"name"`
@@ -36,6 +61,24 @@ type DNSRecord struct {
 
 type Disk struct {
 	Size int `json:"size"`
+}
+
+type Enviroment struct {
+	ID              string       `json:"id"`
+	CompetitionID   string       `json:"CompetitionID"`
+	Name            string       `json:"Name"`
+	Description     string       `json:"Description"`
+	Builder         string       `json:"Builder"`
+	TeamCount       int          `json:"TeamCount"`
+	AdminCIDRs      []*string    `json:"AdminCIDRs"`
+	ExposedVDIPorts []*string    `json:"ExposedVDIPorts"`
+	Tags            []*Tag       `json:"tags"`
+	Config          []*ConfigMap `json:"config"`
+	Maintainer      *User        `json:"maintainer"`
+	Networks        []*Network   `json:"networks"`
+	Hosts           []*Host      `json:"hosts"`
+	Build           *Build       `json:"build"`
+	Competition     *Competition `json:"competition"`
 }
 
 type FileDelete struct {
@@ -95,6 +138,50 @@ type Host struct {
 	FileExtracts     []*FileExtract  `json:"fileExtracts"`
 }
 
+type Network struct {
+	ID         string     `json:"id"`
+	Name       string     `json:"name"`
+	Cidr       string     `json:"cidr"`
+	VdiVisible bool       `json:"vdiVisible"`
+	Vars       []*VarsMap `json:"vars"`
+	Tags       []*Tag     `json:"tags"`
+}
+
+type ProvisionedHost struct {
+	ID                 string              `json:"id"`
+	SubnetIP           string              `json:"subnetIP"`
+	Status             *Status             `json:"status"`
+	ProvisionedNetwork *ProvisionedNetwork `json:"provisionedNetwork"`
+	ProvisionedSteps   []*ProvisionedStep  `json:"provisionedSteps"`
+	Host               *Host               `json:"host"`
+}
+
+type ProvisionedNetwork struct {
+	ID               string             `json:"id"`
+	Name             string             `json:"name"`
+	Cidr             string             `json:"cidr"`
+	Vars             []*VarsMap         `json:"vars"`
+	Tags             []*Tag             `json:"tags"`
+	ProvisionedHosts []*ProvisionedHost `json:"provisionedHosts"`
+	Status           *Status            `json:"status"`
+	Network          *Network           `json:"network"`
+	Build            *Build             `json:"build"`
+}
+
+type ProvisionedStep struct {
+	ID              string           `json:"id"`
+	ProvisionType   string           `json:"provisionType"`
+	StepNumber      int              `json:"stepNumber"`
+	ProvisionedHost *ProvisionedHost `json:"provisionedHost"`
+	Status          *Status          `json:"status"`
+	Script          *Script          `json:"script"`
+	Command         *Command         `json:"command"`
+	DNSRecord       *DNSRecord       `json:"DNSRecord"`
+	FileDownload    *FileDownload    `json:"fileDownload"`
+	FileDelete      *FileDelete      `json:"fileDelete"`
+	FileExtract     *FileExtract     `json:"fileExtract"`
+}
+
 type Script struct {
 	ID           string     `json:"id"`
 	Name         string     `json:"name"`
@@ -114,10 +201,31 @@ type Script struct {
 	Findings     []*Finding `json:"findings"`
 }
 
+type Status struct {
+	State     ProvisionStatus `json:"state"`
+	StartedAt string          `json:"startedAt"`
+	EndedAt   string          `json:"endedAt"`
+	Failed    bool            `json:"failed"`
+	Completed bool            `json:"completed"`
+	Error     string          `json:"error"`
+}
+
 type Tag struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
 	Description *string `json:"description"`
+}
+
+type Team struct {
+	ID                  string                `json:"id"`
+	TeamNumber          int                   `json:"teamNumber"`
+	Config              []*ConfigMap          `json:"config"`
+	Revision            int                   `json:"revision"`
+	Maintainer          *User                 `json:"maintainer"`
+	Build               *Build                `json:"build"`
+	Enviroment          *Enviroment           `json:"enviroment"`
+	Tags                []*Tag                `json:"tags"`
+	ProvisionedNetworks []*ProvisionedNetwork `json:"provisionedNetworks"`
 }
 
 type User struct {
@@ -125,6 +233,11 @@ type User struct {
 	Name  string `json:"name"`
 	UUID  string `json:"uuid"`
 	Email string `json:"email"`
+}
+
+type ConfigMap struct {
+	Key   *string `json:"key"`
+	Value *string `json:"value"`
 }
 
 type VarsMap struct {
@@ -225,5 +338,54 @@ func (e *FindingSeverity) UnmarshalGQL(v interface{}) error {
 }
 
 func (e FindingSeverity) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ProvisionStatus string
+
+const (
+	ProvisionStatusProvStatusUndefined  ProvisionStatus = "ProvStatusUndefined"
+	ProvisionStatusProvStatusAwaiting   ProvisionStatus = "ProvStatusAwaiting"
+	ProvisionStatusProvStatusInProgress ProvisionStatus = "ProvStatusInProgress"
+	ProvisionStatusProvStatusFailed     ProvisionStatus = "ProvStatusFailed"
+	ProvisionStatusProvStatusComplete   ProvisionStatus = "ProvStatusComplete"
+	ProvisionStatusProvStatusTainted    ProvisionStatus = "ProvStatusTainted"
+)
+
+var AllProvisionStatus = []ProvisionStatus{
+	ProvisionStatusProvStatusUndefined,
+	ProvisionStatusProvStatusAwaiting,
+	ProvisionStatusProvStatusInProgress,
+	ProvisionStatusProvStatusFailed,
+	ProvisionStatusProvStatusComplete,
+	ProvisionStatusProvStatusTainted,
+}
+
+func (e ProvisionStatus) IsValid() bool {
+	switch e {
+	case ProvisionStatusProvStatusUndefined, ProvisionStatusProvStatusAwaiting, ProvisionStatusProvStatusInProgress, ProvisionStatusProvStatusFailed, ProvisionStatusProvStatusComplete, ProvisionStatusProvStatusTainted:
+		return true
+	}
+	return false
+}
+
+func (e ProvisionStatus) String() string {
+	return string(e)
+}
+
+func (e *ProvisionStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ProvisionStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ProvisionStatus", str)
+	}
+	return nil
+}
+
+func (e ProvisionStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

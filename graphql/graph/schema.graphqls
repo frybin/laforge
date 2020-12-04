@@ -7,6 +7,11 @@ type varsMap {
   value: String
 }
 
+type configMap {
+  key: String
+  value: String
+}
+
 type Disk {
   size: Int!
 }
@@ -140,8 +145,126 @@ type Host{
   fileExtracts: [FileExtract]  
 }
 
+type Network{
+  id: ID!
+  name: String!
+  cidr: String!
+  vdiVisible: Boolean!
+  vars: [varsMap]!
+  tags: [Tag]!
+}
+
+type DNS{
+  id: ID!
+  type: String!
+  rootDomain: String!
+  DNSServers: [String]!
+  NTPServer: [String]!
+  config: [configMap]!
+}
+
+type Build{
+  id: ID!
+  revision: Int!
+  tags: [Tag]!
+  config: [configMap]!
+  maintainer: User!
+  teams: [Team]!
+}
+
+type Enviroment{
+  id: ID!
+  CompetitionID: String!
+  Name: String!
+  Description: String!
+  Builder: String!
+  TeamCount: Int!
+  AdminCIDRs: [String]!
+  ExposedVDIPorts: [String]!
+  tags: [Tag]!
+  config: [configMap]!
+  maintainer: User!
+  networks: [Network]!
+  hosts: [Host]!
+  build: Build!
+  competition: Competition!
+}
+
+type Competition{
+  id: ID!
+  rootPassword:String!
+  config: [configMap]!
+  dns: DNS!
+}
+
+type Team{
+  id: ID!
+  teamNumber: Int!
+  config: [configMap]!
+  revision: Int!
+  maintainer: User!
+  build: Build!
+  enviroment: Enviroment!
+  tags: [Tag]!
+  provisionedNetworks: [ProvisionedNetwork]!
+}
+
+type ProvisionedNetwork{
+  id: ID!
+  name: String!
+  cidr: String!
+  vars: [varsMap]!
+  tags: [Tag]!
+  provisionedHosts: [ProvisionedHost]!
+  status: Status!
+  network: Network!
+  build: Build!
+}
+
+enum ProvisionStatus {
+  ProvStatusUndefined
+  ProvStatusAwaiting
+  ProvStatusInProgress
+  ProvStatusFailed
+  ProvStatusComplete
+  ProvStatusTainted
+}
+
+type Status{
+  state: ProvisionStatus!
+  startedAt: String!
+  endedAt: String!
+  failed: Boolean!
+  completed: Boolean!
+  error: String!
+}
+
+type ProvisionedHost{
+  id: ID!
+  subnetIP: String!
+  status: Status!
+  provisionedNetwork: ProvisionedNetwork!
+  provisionedSteps: [ProvisionedStep]!
+  host: Host!
+}
+
+type ProvisionedStep{
+  id: ID!
+  provisionType: String!
+  stepNumber: Int! 
+  provisionedHost: ProvisionedHost!
+  status: Status!
+  script: Script!
+  command: Command!
+  DNSRecord: DNSRecord!
+  fileDownload: FileDownload!
+  fileDelete: FileDelete!
+  fileExtract: FileExtract!
+}
+
 type Query {
   hosts: [Host]!
+  povisionedHosts: [ProvisionedHost]!
 }
 
 # type Todo {
