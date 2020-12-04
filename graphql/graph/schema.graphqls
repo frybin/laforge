@@ -2,27 +2,169 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+type varsMap {
+  key: String
+  value: String
 }
 
-type User {
+type Disk {
+  size: Int!
+}
+
+type User{
   id: ID!
   name: String!
+  uuid: String!
+  email: String!
+}
+
+type Tag{
+  id: ID!
+  name: String!
+  description: String
+}
+
+
+enum FindingSeverity {
+  ZeroSeverity
+  LowSeverity
+  MediumSeverity
+  HighSeverity
+  CriticalSeverity
+  NullSeverity
+}
+
+enum FindingDifficulty {
+  ZeroDifficulty
+  NoviceDifficulty
+  AdvancedDifficulty
+  ExpertDifficulty
+  NullDifficulty
+}
+
+type Finding{
+  name: String!
+  description: String!
+  severity: FindingSeverity!
+  difficulty: FindingDifficulty!
+  maintainer: User!
+  tags: [Tag]!
+  Host: Host!
+}
+
+type DNSRecord{
+  id: ID!
+  name: String!
+  values: [String]!
+  type: String!
+  zone: String!
+  vars: [varsMap]!
+  tags: [Tag]!
+  disabled: Boolean!
+}
+
+type Script{
+  id: ID!
+  name: String!
+  language: String!
+  description: String!
+  source: String!
+  sourceType: String!
+  cooldown: Int!
+  timeout: Int!
+  ignoreErrors: Boolean!
+  args: [String]!
+  disabled: Boolean!
+  vars: [varsMap]!
+  tags: [Tag]!
+  absPath: String!
+  maintainer: User!
+  findings: [Finding]!
+}
+type Command{
+  id: ID!
+  name: String!
+  description: String!
+  program: String!
+  args: [String]!
+  ignoreErrors: Boolean!
+  cooldown: Int!
+  timeout: Int!
+  disabled: Boolean!
+  vars: [varsMap]!
+  tags: [Tag]!
+  maintainer: User!
+}
+type FileDownload{
+  id: ID!
+  sourceType: String!
+  source: String!
+  destination: String!
+  templete: Boolean!
+  mode: String!
+  disabled: Boolean!
+  md5: String!
+  absPath: String!
+  tags: [Tag]!
+}
+type FileDelete{
+  id: ID!
+  path: String!
+}
+type FileExtract{
+  id: ID!
+  source: String!
+  destination: String!
+  type: String!
+}
+
+type Host{
+  id: ID!
+  hostname: String!
+  OS: String!
+  lastOctect: Int!
+  allowMacChanges: Boolean!
+  exposedTCPPorts: [String]!
+  exposedUDPPorts: [String]!
+  overridePassword: String!
+  vars: [varsMap]!
+  userGroups: [String]!
+  dependsOn: [Host]!
+  maintainer: User!
+  tags: [Tag]!
+  dnsRecords: [DNSRecord]
+  commands: [Command]
+  scripts: [Script]
+  fileDeletes: [FileDelete]
+  fileDownloads: [FileDownload]
+  fileExtracts: [FileExtract]  
 }
 
 type Query {
-  todos: [Todo!]!
+  hosts: [Host]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
+# type Todo {
+#   id: ID!
+#   text: String!
+#   done: Boolean!
+#   user: User!
+# }
 
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
-}
+# type User {
+#   id: ID!
+#   name: String!
+# }
+
+# type Query {
+#   todos: [Todo!]!
+# }
+
+# input NewTodo {
+#   text: String!
+#   userId: String!
+# }
+
+# type Mutation {
+#   createTodo(input: NewTodo!): Todo!
+# }

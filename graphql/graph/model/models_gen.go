@@ -2,19 +2,228 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type Command struct {
+	ID           string     `json:"id"`
+	Name         string     `json:"name"`
+	Description  string     `json:"description"`
+	Program      string     `json:"program"`
+	Args         []*string  `json:"args"`
+	IgnoreErrors bool       `json:"ignoreErrors"`
+	Cooldown     int        `json:"cooldown"`
+	Timeout      int        `json:"timeout"`
+	Disabled     bool       `json:"disabled"`
+	Vars         []*VarsMap `json:"vars"`
+	Tags         []*Tag     `json:"tags"`
+	Maintainer   *User      `json:"maintainer"`
 }
 
-type Todo struct {
+type DNSRecord struct {
+	ID       string     `json:"id"`
+	Name     string     `json:"name"`
+	Values   []*string  `json:"values"`
+	Type     string     `json:"type"`
+	Zone     string     `json:"zone"`
+	Vars     []*VarsMap `json:"vars"`
+	Tags     []*Tag     `json:"tags"`
+	Disabled bool       `json:"disabled"`
+}
+
+type Disk struct {
+	Size int `json:"size"`
+}
+
+type FileDelete struct {
 	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+	Path string `json:"path"`
+}
+
+type FileDownload struct {
+	ID          string `json:"id"`
+	SourceType  string `json:"sourceType"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
+	Templete    bool   `json:"templete"`
+	Mode        string `json:"mode"`
+	Disabled    bool   `json:"disabled"`
+	Md5         string `json:"md5"`
+	AbsPath     string `json:"absPath"`
+	Tags        []*Tag `json:"tags"`
+}
+
+type FileExtract struct {
+	ID          string `json:"id"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
+	Type        string `json:"type"`
+}
+
+type Finding struct {
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Severity    FindingSeverity   `json:"severity"`
+	Difficulty  FindingDifficulty `json:"difficulty"`
+	Maintainer  *User             `json:"maintainer"`
+	Tags        []*Tag            `json:"tags"`
+	Host        *Host             `json:"Host"`
+}
+
+type Host struct {
+	ID               string          `json:"id"`
+	Hostname         string          `json:"hostname"`
+	Os               string          `json:"OS"`
+	LastOctect       int             `json:"lastOctect"`
+	AllowMacChanges  bool            `json:"allowMacChanges"`
+	ExposedTCPPorts  []*string       `json:"exposedTCPPorts"`
+	ExposedUDPPorts  []*string       `json:"exposedUDPPorts"`
+	OverridePassword string          `json:"overridePassword"`
+	Vars             []*VarsMap      `json:"vars"`
+	UserGroups       []*string       `json:"userGroups"`
+	DependsOn        []*Host         `json:"dependsOn"`
+	Maintainer       *User           `json:"maintainer"`
+	Tags             []*Tag          `json:"tags"`
+	DNSRecords       []*DNSRecord    `json:"dnsRecords"`
+	Commands         []*Command      `json:"commands"`
+	Scripts          []*Script       `json:"scripts"`
+	FileDeletes      []*FileDelete   `json:"fileDeletes"`
+	FileDownloads    []*FileDownload `json:"fileDownloads"`
+	FileExtracts     []*FileExtract  `json:"fileExtracts"`
+}
+
+type Script struct {
+	ID           string     `json:"id"`
+	Name         string     `json:"name"`
+	Language     string     `json:"language"`
+	Description  string     `json:"description"`
+	Source       string     `json:"source"`
+	SourceType   string     `json:"sourceType"`
+	Cooldown     int        `json:"cooldown"`
+	Timeout      int        `json:"timeout"`
+	IgnoreErrors bool       `json:"ignoreErrors"`
+	Args         []*string  `json:"args"`
+	Disabled     bool       `json:"disabled"`
+	Vars         []*VarsMap `json:"vars"`
+	Tags         []*Tag     `json:"tags"`
+	AbsPath      string     `json:"absPath"`
+	Maintainer   *User      `json:"maintainer"`
+	Findings     []*Finding `json:"findings"`
+}
+
+type Tag struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	UUID  string `json:"uuid"`
+	Email string `json:"email"`
+}
+
+type VarsMap struct {
+	Key   *string `json:"key"`
+	Value *string `json:"value"`
+}
+
+type FindingDifficulty string
+
+const (
+	FindingDifficultyZeroDifficulty     FindingDifficulty = "ZeroDifficulty"
+	FindingDifficultyNoviceDifficulty   FindingDifficulty = "NoviceDifficulty"
+	FindingDifficultyAdvancedDifficulty FindingDifficulty = "AdvancedDifficulty"
+	FindingDifficultyExpertDifficulty   FindingDifficulty = "ExpertDifficulty"
+	FindingDifficultyNullDifficulty     FindingDifficulty = "NullDifficulty"
+)
+
+var AllFindingDifficulty = []FindingDifficulty{
+	FindingDifficultyZeroDifficulty,
+	FindingDifficultyNoviceDifficulty,
+	FindingDifficultyAdvancedDifficulty,
+	FindingDifficultyExpertDifficulty,
+	FindingDifficultyNullDifficulty,
+}
+
+func (e FindingDifficulty) IsValid() bool {
+	switch e {
+	case FindingDifficultyZeroDifficulty, FindingDifficultyNoviceDifficulty, FindingDifficultyAdvancedDifficulty, FindingDifficultyExpertDifficulty, FindingDifficultyNullDifficulty:
+		return true
+	}
+	return false
+}
+
+func (e FindingDifficulty) String() string {
+	return string(e)
+}
+
+func (e *FindingDifficulty) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FindingDifficulty(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FindingDifficulty", str)
+	}
+	return nil
+}
+
+func (e FindingDifficulty) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type FindingSeverity string
+
+const (
+	FindingSeverityZeroSeverity     FindingSeverity = "ZeroSeverity"
+	FindingSeverityLowSeverity      FindingSeverity = "LowSeverity"
+	FindingSeverityMediumSeverity   FindingSeverity = "MediumSeverity"
+	FindingSeverityHighSeverity     FindingSeverity = "HighSeverity"
+	FindingSeverityCriticalSeverity FindingSeverity = "CriticalSeverity"
+	FindingSeverityNullSeverity     FindingSeverity = "NullSeverity"
+)
+
+var AllFindingSeverity = []FindingSeverity{
+	FindingSeverityZeroSeverity,
+	FindingSeverityLowSeverity,
+	FindingSeverityMediumSeverity,
+	FindingSeverityHighSeverity,
+	FindingSeverityCriticalSeverity,
+	FindingSeverityNullSeverity,
+}
+
+func (e FindingSeverity) IsValid() bool {
+	switch e {
+	case FindingSeverityZeroSeverity, FindingSeverityLowSeverity, FindingSeverityMediumSeverity, FindingSeverityHighSeverity, FindingSeverityCriticalSeverity, FindingSeverityNullSeverity:
+		return true
+	}
+	return false
+}
+
+func (e FindingSeverity) String() string {
+	return string(e)
+}
+
+func (e *FindingSeverity) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FindingSeverity(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FindingSeverity", str)
+	}
+	return nil
+}
+
+func (e FindingSeverity) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
